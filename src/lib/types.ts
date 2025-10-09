@@ -25,6 +25,7 @@ export interface Layer {
   locked: boolean;
   opacity: number;
   thumbnail?: string;
+  modifiers?: number;
 }
 
 export interface Project {

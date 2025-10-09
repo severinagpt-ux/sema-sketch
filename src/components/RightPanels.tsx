@@ -5,6 +5,7 @@ import { Panel } from '@/lib/types';
 import { LayersPanel } from './panels/LayersPanel';
 import { InspectorPanel } from './panels/InspectorPanel';
 import { ColorSpherePanel } from './panels/ColorSpherePanel';
+import { FeatherEdgesPanel } from './panels/FeatherEdgesPanel';
 
 interface RightPanelsProps {
   onLayerVisibilityToggle: (layerId: string) => void;
@@ -39,14 +40,7 @@ export const RightPanels = ({ onLayerVisibilityToggle }: RightPanelsProps) => {
       case 'color':
         return <ColorSpherePanel />;
       case 'effects':
-        return (
-          <div className="p-4">
-            <h3 className="text-sm font-semibold mb-3">Effects Panel</h3>
-            <div className="text-xs text-muted-foreground">
-              Filters, edge AI, shadows, and color adjustments will appear here.
-            </div>
-          </div>
-        );
+        return <FeatherEdgesPanel />;
       default:
         return null;
     }

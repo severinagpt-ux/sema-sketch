@@ -3,13 +3,22 @@ import { TopBar } from '@/components/TopBar';
 import { LeftToolbar } from '@/components/LeftToolbar';
 import { Canvas } from '@/components/Canvas';
 import { RightPanels } from '@/components/RightPanels';
-import { Tool } from '@/lib/types';
+import { BottomBar } from '@/components/BottomBar';
+import { MiniLayersBar } from '@/components/MiniLayersBar';
+import { CursorZoomPanel } from '@/components/panels/CursorZoomPanel';
+import { MicroscopePanel } from '@/components/panels/MicroscopePanel';
+import { Tool, Layer } from '@/lib/types';
 
 const Index = () => {
   const [activeTool, setActiveTool] = useState<Tool>('select');
   const [magnifier1, setMagnifier1] = useState(100);
   const [magnifier2, setMagnifier2] = useState(200);
   const [activeMagnifier, setActiveMagnifier] = useState<1 | 2>(1);
+  const [layers, setLayers] = useState<Layer[]>([
+    { id: '1', name: 'Background', visible: true, locked: true, opacity: 100, modifiers: 0 },
+    { id: '2', name: 'Layer 1', visible: true, locked: false, opacity: 100, modifiers: 2 },
+    { id: '3', name: 'Layer 2', visible: true, locked: false, opacity: 80, modifiers: 1 },
+  ]);
 
   const currentZoom = activeMagnifier === 1 ? magnifier1 : magnifier2;
 
@@ -26,7 +35,11 @@ const Index = () => {
   };
 
   const handleLayerVisibilityToggle = (layerId: string) => {
-    console.log('Toggle layer visibility:', layerId);
+    setLayers(layers.map(l => l.id === layerId ? { ...l, visible: !l.visible } : l));
+  };
+
+  const handleLayerLockToggle = (layerId: string) => {
+    setLayers(layers.map(l => l.id === layerId ? { ...l, locked: !l.locked } : l));
   };
 
   return (
@@ -46,15 +59,34 @@ const Index = () => {
           onToolChange={setActiveTool}
         />
         
-        <Canvas 
-          activeTool={activeTool}
-          zoom={currentZoom}
-        />
-        
-        <RightPanels 
-          onLayerVisibilityToggle={handleLayerVisibilityToggle}
-        />
+        <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex overflow-hidden">
+            <Canvas 
+              activeTool={activeTool}
+              zoom={currentZoom}
+            />
+            
+            <MiniLayersBar 
+              layers={layers}
+              onLayerVisibilityToggle={handleLayerVisibilityToggle}
+              onLayerLockToggle={handleLayerLockToggle}
+            />
+            
+            <RightPanels 
+              onLayerVisibilityToggle={handleLayerVisibilityToggle}
+            />
+          </div>
+          
+          <BottomBar 
+            activeTool={activeTool}
+            zoom={currentZoom}
+          />
+        </div>
       </div>
+
+      {/* Floating Panels */}
+      <CursorZoomPanel />
+      <MicroscopePanel />
     </div>
   );
 };

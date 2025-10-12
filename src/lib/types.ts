@@ -16,7 +16,19 @@ export type Tool =
   | 'measure'
   | 'magnifier';
 
-export type Panel = 'layers' | 'inspector' | 'effects' | 'color';
+export type Panel = 'layers' | 'inspector' | 'effects' | 'color' | 'assets' | 'cursor-zoom' | 'microscope';
+
+export type PanelSize = 'full' | 'top' | 'bottom';
+
+export interface Modifier {
+  id: string;
+  type: 'transparency' | 'mask' | 'warp' | 'blend' | 'filter';
+  name: string;
+  enabled: boolean;
+  opacity: number;
+  maskColor?: string;
+  settings?: Record<string, any>;
+}
 
 export interface Layer {
   id: string;
@@ -25,7 +37,22 @@ export interface Layer {
   locked: boolean;
   opacity: number;
   thumbnail?: string;
-  modifiers?: number;
+  modifiers: Modifier[];
+  maskVisible?: boolean;
+}
+
+export interface Asset {
+  id: string;
+  name: string;
+  category: string;
+  thumbnail: string;
+  variants?: {
+    front?: string;
+    threequarter?: string;
+    side?: string;
+    rear?: string;
+  };
+  tags: string[];
 }
 
 export interface Project {

@@ -34,9 +34,9 @@ export const MiniLayersBar = ({ layers, onLayerVisibilityToggle, onLayerLockTogg
               </div>
               
               {/* Modifier Count Badge */}
-              {layer.modifiers && layer.modifiers > 0 && (
+              {layer.modifiers && layer.modifiers.length > 0 && (
                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-[10px] font-bold">
-                  {layer.modifiers}
+                  {layer.modifiers.length}
                 </div>
               )}
             </div>

@@ -1,14 +1,17 @@
-import { MousePointer2, ZoomIn } from 'lucide-react';
-import { Tool } from '@/lib/types';
+import { MousePointer2, ZoomIn, Film } from 'lucide-react';
+import { Tool, AppView } from '@/lib/types';
+import { Button } from './ui/button';
 
 interface BottomBarProps {
   activeTool: Tool;
   zoom: number;
   cursorX?: number;
   cursorY?: number;
+  onOpenTimeline?: () => void;
+  currentView?: AppView;
 }
 
-export const BottomBar = ({ activeTool, zoom, cursorX = 0, cursorY = 0 }: BottomBarProps) => {
+export const BottomBar = ({ activeTool, zoom, cursorX = 0, cursorY = 0, onOpenTimeline, currentView = 'canvas' }: BottomBarProps) => {
   const toolHints: Record<Tool, string> = {
     'select': 'Click to select • Drag to move • Shift: Add to selection',
     'magic-wand': 'Click to select similar • Scroll: Adjust tolerance',
@@ -37,7 +40,7 @@ export const BottomBar = ({ activeTool, zoom, cursorX = 0, cursorY = 0 }: Bottom
         <span>{toolHints[activeTool]}</span>
       </div>
 
-      {/* Right: Coordinates and Zoom */}
+      {/* Right: Coordinates, Zoom, and Timeline */}
       <div className="flex items-center gap-4 text-muted-foreground">
         <div className="flex items-center gap-2">
           <MousePointer2 className="w-3 h-3" />
@@ -48,6 +51,20 @@ export const BottomBar = ({ activeTool, zoom, cursorX = 0, cursorY = 0 }: Bottom
           <ZoomIn className="w-3 h-3" />
           <span className="font-mono">{zoom}%</span>
         </div>
+        {currentView === 'canvas' && onOpenTimeline && (
+          <>
+            <div className="w-px h-4 bg-panel-border" />
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={onOpenTimeline}
+              className="text-xs"
+            >
+              <Film className="w-3 h-3 mr-1" />
+              Open Timeline
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

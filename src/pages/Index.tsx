@@ -6,7 +6,8 @@ import { RightPanels } from '@/components/RightPanels';
 import { BottomBar } from '@/components/BottomBar';
 import { MiniLayersBar } from '@/components/MiniLayersBar';
 import { SettingsPanel } from '@/components/panels/SettingsPanel';
-import { Tool, Layer } from '@/lib/types';
+import { Timeline } from '@/pages/Timeline';
+import { Tool, Layer, AppView } from '@/lib/types';
 
 const Index = () => {
   const [activeTool, setActiveTool] = useState<Tool>('select');
@@ -14,6 +15,7 @@ const Index = () => {
   const [magnifier2, setMagnifier2] = useState(200);
   const [activeMagnifier, setActiveMagnifier] = useState<1 | 2>(1);
   const [settingsPanelMinimized, setSettingsPanelMinimized] = useState(false);
+  const [currentView, setCurrentView] = useState<AppView>('canvas');
   const [layers, setLayers] = useState<Layer[]>([
     { id: '1', name: 'Background', visible: true, locked: true, opacity: 100, modifiers: [], maskVisible: false },
     { 
@@ -72,43 +74,60 @@ const Index = () => {
         activeMagnifier={activeMagnifier}
         onMagnifierChange={handleMagnifierChange}
         onMagnifierToggle={handleMagnifierToggle}
+        currentView={currentView}
+        onViewChange={setCurrentView}
       />
       
       <div className="flex-1 flex overflow-hidden">
-        <SettingsPanel
-          activeTool={activeTool}
-          isMinimized={settingsPanelMinimized}
-          onToggleMinimize={() => setSettingsPanelMinimized(!settingsPanelMinimized)}
-        />
-        
-        <LeftToolbar 
-          activeTool={activeTool}
-          onToolChange={setActiveTool}
-        />
-        
-        <div className="flex-1 flex flex-col">
-          <div className="flex-1 flex overflow-hidden">
-            <Canvas
+        {currentView === 'canvas' ? (
+          <>
+            <SettingsPanel
+              activeTool={activeTool}
+              isMinimized={settingsPanelMinimized}
+              onToggleMinimize={() => setSettingsPanelMinimized(!settingsPanelMinimized)}
+            />
+            
+            <LeftToolbar 
+              activeTool={activeTool}
+              onToolChange={setActiveTool}
+            />
+            
+            <div className="flex-1 flex flex-col">
+              <div className="flex-1 flex overflow-hidden">
+                <Canvas
+                  activeTool={activeTool}
+                  zoom={currentZoom}
+                />
+                
+                <MiniLayersBar 
+                  layers={layers}
+                  onLayerVisibilityToggle={handleLayerVisibilityToggle}
+                  onLayerLockToggle={handleLayerLockToggle}
+                />
+                
+                <RightPanels 
+                  onLayerVisibilityToggle={handleLayerVisibilityToggle}
+                />
+              </div>
+              
+              <BottomBar 
+                activeTool={activeTool}
+                zoom={currentZoom}
+                onOpenTimeline={() => setCurrentView('timeline')}
+                currentView={currentView}
+              />
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex flex-col">
+            <Timeline />
+            <BottomBar 
               activeTool={activeTool}
               zoom={currentZoom}
-            />
-            
-            <MiniLayersBar 
-              layers={layers}
-              onLayerVisibilityToggle={handleLayerVisibilityToggle}
-              onLayerLockToggle={handleLayerLockToggle}
-            />
-            
-            <RightPanels 
-              onLayerVisibilityToggle={handleLayerVisibilityToggle}
+              currentView={currentView}
             />
           </div>
-          
-          <BottomBar 
-            activeTool={activeTool}
-            zoom={currentZoom}
-          />
-        </div>
+        )}
       </div>
 
     </div>

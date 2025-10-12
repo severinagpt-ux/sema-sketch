@@ -20,6 +20,8 @@ export type Panel = 'layers' | 'inspector' | 'effects' | 'color' | 'assets' | 'c
 
 export type PanelSize = 'full' | 'top' | 'bottom';
 
+export type AppView = 'canvas' | 'timeline';
+
 export interface Modifier {
   id: string;
   type: 'transparency' | 'mask' | 'warp' | 'blend' | 'filter';
@@ -62,4 +64,39 @@ export interface Project {
   magnifierPreset2: number;
   activeMagnifier: 1 | 2;
   layers: Layer[];
+}
+
+export interface VideoFrame {
+  id: string;
+  timestamp: number;
+  thumbnail: string;
+  fullImage?: string;
+}
+
+export interface MotionAnalysis {
+  direction: { x: number; y: number };
+  speed: number;
+  acceleration: number;
+  description: string;
+  keyFrames: string[];
+}
+
+export interface VideoShot {
+  id: string;
+  name: string;
+  videoUrl?: string;
+  frames: VideoFrame[];
+  duration: number;
+  firstFrame: string;
+  lastFrame: string;
+  motionAnalysis?: MotionAnalysis;
+  prompt: string;
+  status: 'generating' | 'ready' | 'error';
+}
+
+export interface TimelineProject {
+  id: string;
+  name: string;
+  shots: VideoShot[];
+  currentShotId?: string;
 }

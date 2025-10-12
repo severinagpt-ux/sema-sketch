@@ -1,6 +1,7 @@
-import { Settings, User, Plus, Undo2, Redo2, History, Mic, Volume2, Ruler, Crosshair, Magnet, Maximize2, Columns2, ZoomIn } from 'lucide-react';
+import { Settings, User, Plus, Undo2, Redo2, History, Mic, Volume2, Ruler, Crosshair, Magnet, Maximize2, Columns2, ZoomIn, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { useState } from 'react';
+import { AppView } from '@/lib/types';
 
 interface TopBarProps {
   projectName: string;
@@ -9,6 +10,8 @@ interface TopBarProps {
   activeMagnifier: 1 | 2;
   onMagnifierChange: (preset: 1 | 2, value: number) => void;
   onMagnifierToggle: (preset: 1 | 2) => void;
+  currentView?: AppView;
+  onViewChange?: (view: AppView) => void;
 }
 
 export const TopBar = ({ 
@@ -17,7 +20,9 @@ export const TopBar = ({
   magnifier2, 
   activeMagnifier,
   onMagnifierChange,
-  onMagnifierToggle 
+  onMagnifierToggle,
+  currentView = 'canvas',
+  onViewChange
 }: TopBarProps) => {
   const [showMagnifier1Slider, setShowMagnifier1Slider] = useState(false);
   const [showMagnifier2Slider, setShowMagnifier2Slider] = useState(false);
@@ -35,9 +40,31 @@ export const TopBar = ({
         </Button>
         <div className="h-6 w-px bg-border mx-1" />
         <div className="flex items-center gap-1">
-          <Button variant="secondary" size="sm" className="tool-tab">
+          <Button 
+            variant={currentView === 'canvas' ? 'secondary' : 'ghost'} 
+            size="sm" 
+            className="tool-tab"
+            onClick={() => onViewChange?.('canvas')}
+          >
             {projectName}
           </Button>
+          {currentView === 'timeline' && (
+            <>
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="tool-tab flex items-center gap-2"
+              >
+                Video Timeline
+                <button
+                  onClick={() => onViewChange?.('canvas')}
+                  className="hover:bg-background/50 rounded p-0.5 transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </Button>
+            </>
+          )}
           <Button variant="ghost" size="icon" className="icon-button">
             <Plus className="w-4 h-4" />
           </Button>

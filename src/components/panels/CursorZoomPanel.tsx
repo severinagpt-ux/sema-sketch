@@ -4,13 +4,21 @@ import { Button } from '../ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Switch } from '../ui/switch';
 
-export const CursorZoomPanel = () => {
+interface CursorZoomPanelProps {
+  size?: 'full' | 'half';
+}
+
+export const CursorZoomPanel = ({ size = 'full' }: CursorZoomPanelProps) => {
   const [zoom, setZoom] = useState(100);
   const [showBorder, setShowBorder] = useState(true);
   const [bufferSize, setBufferSize] = useState(20);
 
+  // Calculate aspect-safe view size
+  const viewSize = size === 'full' ? 'w-full h-full' : 'w-full h-full';
+  const aspectRatio = 1; // Square aspect ratio maintained
+
   return (
-    <div className="fixed bottom-20 right-20 w-48 h-48 bg-panel-bg border-2 border-panel-border rounded-lg shadow-xl overflow-hidden">
+    <div className={`${viewSize} bg-panel-bg border-2 border-panel-border rounded-lg shadow-xl overflow-hidden flex flex-col`}>
       {/* Header */}
       <div className="flex items-center justify-between px-2 py-1 bg-toolbar border-b border-panel-border">
         <div className="flex items-center gap-1 text-xs">
@@ -49,28 +57,40 @@ export const CursorZoomPanel = () => {
         </Popover>
       </div>
 
-      {/* Zoom View */}
-      <div className="relative w-full h-[calc(100%-28px)]">
-        {/* Canvas preview */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_hsl(var(--primary))_0%,_transparent_70%)] opacity-10" />
-        
-        {/* Buffer zone indicator */}
-        {showBorder && (
-          <div 
-            className="absolute border-2 border-primary/30 pointer-events-none"
-            style={{
-              top: `${bufferSize}px`,
-              left: `${bufferSize}px`,
-              right: `${bufferSize}px`,
-              bottom: `${bufferSize}px`,
-            }}
-          />
-        )}
+      {/* Zoom View - Maintains square aspect ratio */}
+      <div className="relative flex-1 flex items-center justify-center p-2">
+        <div 
+          className="relative bg-background"
+          style={{ 
+            width: '100%',
+            paddingBottom: '100%', // Square aspect ratio
+            maxWidth: size === 'full' ? '280px' : '140px',
+            maxHeight: size === 'full' ? '280px' : '140px',
+          }}
+        >
+          <div className="absolute inset-0">
+            {/* Canvas preview */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_hsl(var(--primary))_0%,_transparent_70%)] opacity-10" />
+            
+            {/* Buffer zone indicator */}
+            {showBorder && (
+              <div 
+                className="absolute border-2 border-primary/30 pointer-events-none"
+                style={{
+                  top: `${bufferSize}px`,
+                  left: `${bufferSize}px`,
+                  right: `${bufferSize}px`,
+                  bottom: `${bufferSize}px`,
+                }}
+              />
+            )}
 
-        {/* Crosshair */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-px h-full bg-primary/30" />
-          <div className="absolute w-full h-px bg-primary/30" />
+            {/* Crosshair */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-px h-full bg-primary/30" />
+              <div className="absolute w-full h-px bg-primary/30" />
+            </div>
+          </div>
         </div>
       </div>
 

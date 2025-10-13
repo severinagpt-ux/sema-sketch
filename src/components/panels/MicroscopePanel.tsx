@@ -4,13 +4,19 @@ import { Button } from '../ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Switch } from '../ui/switch';
 
-export const MicroscopePanel = () => {
+interface MicroscopePanelProps {
+  size?: 'full' | 'half';
+}
+
+export const MicroscopePanel = ({ size = 'full' }: MicroscopePanelProps) => {
   const [pixelSize, setPixelSize] = useState(40);
   const [followMode, setFollowMode] = useState<'buffer' | 'center'>('buffer');
   const [showPixelGrid, setShowPixelGrid] = useState(true);
 
+  const viewSize = size === 'full' ? 'w-full h-full' : 'w-full h-full';
+
   return (
-    <div className="fixed bottom-20 right-80 w-64 h-64 bg-panel-bg border-2 border-panel-border rounded-lg shadow-xl overflow-hidden">
+    <div className={`${viewSize} bg-panel-bg border-2 border-panel-border rounded-lg shadow-xl overflow-hidden flex flex-col`}>
       {/* Header */}
       <div className="flex items-center justify-between px-2 py-1 bg-toolbar border-b border-panel-border">
         <div className="flex items-center gap-1 text-xs">
@@ -72,37 +78,49 @@ export const MicroscopePanel = () => {
         </Popover>
       </div>
 
-      {/* Pixel View */}
-      <div className="relative w-full h-[calc(100%-28px)] bg-background">
-        {/* Pixel grid */}
+      {/* Pixel View - Maintains square aspect ratio */}
+      <div className="relative flex-1 flex items-center justify-center p-2">
         <div 
-          className="absolute inset-0 grid gap-0"
-          style={{
-            gridTemplateColumns: `repeat(${pixelSize}, 1fr)`,
-            gridTemplateRows: `repeat(${pixelSize}, 1fr)`,
+          className="relative bg-background"
+          style={{ 
+            width: '100%',
+            paddingBottom: '100%', // Square aspect ratio
+            maxWidth: size === 'full' ? '280px' : '140px',
+            maxHeight: size === 'full' ? '280px' : '140px',
           }}
         >
-          {Array.from({ length: pixelSize * pixelSize }).map((_, i) => (
-            <div
-              key={i}
-              className="border border-panel-border/20"
+          <div className="absolute inset-0">
+            {/* Pixel grid */}
+            <div 
+              className="absolute inset-0 grid gap-0"
               style={{
-                backgroundColor: `hsl(${(i * 7) % 360}, 30%, ${20 + (i % 20)}%)`,
+                gridTemplateColumns: `repeat(${pixelSize}, 1fr)`,
+                gridTemplateRows: `repeat(${pixelSize}, 1fr)`,
               }}
-            />
-          ))}
-        </div>
+            >
+              {Array.from({ length: pixelSize * pixelSize }).map((_, i) => (
+                <div
+                  key={i}
+                  className="border border-panel-border/20"
+                  style={{
+                    backgroundColor: `hsl(${(i * 7) % 360}, 30%, ${20 + (i % 20)}%)`,
+                  }}
+                />
+              ))}
+            </div>
 
-        {/* Center crosshair */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-px h-full bg-primary" />
-          <div className="absolute w-full h-px bg-primary" />
-        </div>
+            {/* Center crosshair */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-px h-full bg-primary" />
+              <div className="absolute w-full h-px bg-primary" />
+            </div>
 
-        {/* Pixel info overlay */}
-        <div className="absolute top-1 left-1 bg-background/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-mono">
-          <div className="text-muted-foreground">Center Pixel</div>
-          <div className="text-primary">RGB(128, 64, 192)</div>
+            {/* Pixel info overlay */}
+            <div className="absolute top-1 left-1 bg-background/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-mono">
+              <div className="text-muted-foreground">Center Pixel</div>
+              <div className="text-primary">RGB(128, 64, 192)</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

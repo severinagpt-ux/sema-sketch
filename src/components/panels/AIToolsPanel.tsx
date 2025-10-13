@@ -1,145 +1,212 @@
 import { useState } from 'react';
-import { Wand2, Sparkles, Brush, Pin, Lasso } from 'lucide-react';
+import { Sparkles, Send, Download, Layers, Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Textarea } from '../ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { ScrollArea } from '../ui/scroll-area';
+import { toast } from 'sonner';
+
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+  imageUrl?: string;
+}
 
 export const AIToolsPanel = () => {
-  const [activeTab, setActiveTab] = useState('instruct');
+  const [messages, setMessages] = useState<Message[]>([
+    { 
+      role: 'assistant', 
+      content: 'Hello! I can help you generate images using AI. Just describe what you want to create!' 
+    }
+  ]);
+  const [input, setInput] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const generateImage = async (prompt: string) => {
+    setIsGenerating(true);
+    
+    try {
+      // Using Lovable AI Gateway with nano banana (gemini-2.5-flash-image-preview)
+      const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_LOVABLE_API_KEY || 'demo-key'}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash-image-preview',
+          messages: [
+            {
+              role: 'user',
+              content: prompt
+            }
+          ],
+          modalities: ['image', 'text']
+        })
+      });
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          toast.error('Rate limit exceeded. Please try again later.');
+          return null;
+        }
+        if (response.status === 402) {
+          toast.error('Payment required. Please add credits to your workspace.');
+          return null;
+        }
+        throw new Error('Failed to generate image');
+      }
+
+      const data = await response.json();
+      const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+      
+      if (!imageUrl) {
+        throw new Error('No image generated');
+      }
+
+      return imageUrl;
+    } catch (error) {
+      console.error('Image generation error:', error);
+      toast.error('Failed to generate image');
+      return null;
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleSend = async () => {
+    if (!input.trim() || isGenerating) return;
+
+    const userMessage: Message = {
+      role: 'user',
+      content: input
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+
+    const imageUrl = await generateImage(input);
+
+    if (imageUrl) {
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: 'Here\'s your generated image!',
+        imageUrl
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+      toast.success('Image generated successfully!');
+    }
+  };
+
+  const handleDownload = (imageUrl: string) => {
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = `ai-generated-${Date.now()}.png`;
+    link.click();
+    toast.success('Image downloaded!');
+  };
+
+  const handleAddToLayers = (imageUrl: string) => {
+    // This would integrate with the layer system
+    toast.success('Image added to layers!');
+  };
 
   return (
     <div className="h-full flex flex-col bg-panel-bg">
-      <div className="border-b border-panel-border px-4 py-2">
-        <h2 className="text-sm font-semibold">AI Tools</h2>
+      {/* Header */}
+      <div className="px-4 py-3 border-b border-panel-border">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-primary" />
+          <h3 className="font-semibold">AI Image Generator</h3>
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">Powered by Google Gemini Nano Banana</p>
       </div>
 
-      {/* Area Selection Tools */}
-      <div className="flex items-center gap-1 px-4 py-2 border-b border-panel-border">
-        <Button variant="ghost" size="icon" className="h-7 w-7">
-          <Pin className="w-4 h-4" />
-        </Button>
-        <Button variant="ghost" size="icon" className="h-7 w-7">
-          <Wand2 className="w-4 h-4" />
-        </Button>
-        <Button variant="ghost" size="icon" className="h-7 w-7">
-          <Lasso className="w-4 h-4" />
-        </Button>
-        <Button variant="ghost" size="icon" className="h-7 w-7">
-          <Brush className="w-4 h-4" />
-        </Button>
-        <span className="text-xs text-muted-foreground ml-2">Mark areas</span>
-      </div>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-        <TabsList className="w-full justify-start rounded-none border-b border-panel-border bg-transparent h-auto p-0">
-          <TabsTrigger value="instruct" className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary">Instruct</TabsTrigger>
-          <TabsTrigger value="generate" className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary">Generate</TabsTrigger>
-          <TabsTrigger value="enhance" className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary">Enhance</TabsTrigger>
-          <TabsTrigger value="inpaint" className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary">Inpaint</TabsTrigger>
-          <TabsTrigger value="lighting" className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary">Lighting</TabsTrigger>
-        </TabsList>
-
-        <div className="flex-1 overflow-y-auto">
-          <TabsContent value="instruct" className="p-4 space-y-3 mt-0">
-            <h3 className="text-sm font-medium">Quick Actions</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <Button variant="secondary" size="sm" className="h-auto py-2 flex flex-col gap-1">
-                <Sparkles className="w-4 h-4" />
-                <span className="text-xs">Remove Blemish</span>
-              </Button>
-              <Button variant="secondary" size="sm" className="h-auto py-2 flex flex-col gap-1">
-                <Sparkles className="w-4 h-4" />
-                <span className="text-xs">Add Object</span>
-              </Button>
-              <Button variant="secondary" size="sm" className="h-auto py-2 flex flex-col gap-1">
-                <Sparkles className="w-4 h-4" />
-                <span className="text-xs">Remove Object</span>
-              </Button>
-              <Button variant="secondary" size="sm" className="h-auto py-2 flex flex-col gap-1">
-                <Sparkles className="w-4 h-4" />
-                <span className="text-xs">Change Color</span>
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="generate" className="p-4 space-y-3 mt-0">
-            <Textarea 
-              placeholder="Describe what you want to generate..."
-              className="min-h-[100px]"
-            />
-            
-            <div className="space-y-2">
-              <label className="text-xs text-muted-foreground">Realism</label>
-              <div className="relative">
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="100" 
-                  defaultValue="50"
-                  className="w-full accent-primary"
-                />
-                <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                  <span>Cartoon</span>
-                  <span>Realistic</span>
-                  <span>3D</span>
-                </div>
+      {/* Messages */}
+      <ScrollArea className="flex-1 p-4">
+        <div className="space-y-4">
+          {messages.map((message, i) => (
+            <div 
+              key={i} 
+              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div className={`max-w-[85%] ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'} rounded-lg p-3`}>
+                <p className="text-sm">{message.content}</p>
+                {message.imageUrl && (
+                  <div className="mt-2 space-y-2">
+                    <img 
+                      src={message.imageUrl} 
+                      alt="Generated" 
+                      className="w-full rounded border border-panel-border"
+                    />
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="secondary" 
+                        className="flex-1"
+                        onClick={() => handleDownload(message.imageUrl!)}
+                      >
+                        <Download className="w-3 h-3 mr-1" />
+                        Download
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="secondary" 
+                        className="flex-1"
+                        onClick={() => handleAddToLayers(message.imageUrl!)}
+                      >
+                        <Layers className="w-3 h-3 mr-1" />
+                        Add to Layer
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-
-            <Select defaultValue="balanced">
-              <SelectTrigger>
-                <SelectValue placeholder="Quality" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="fast">Fast</SelectItem>
-                <SelectItem value="balanced">Balanced</SelectItem>
-                <SelectItem value="high">High Quality</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Button className="w-full">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Generate
-            </Button>
-          </TabsContent>
-
-          <TabsContent value="enhance" className="p-4 space-y-3 mt-0">
-            <p className="text-sm text-muted-foreground">
-              Enhance selected area with AI-powered improvements
-            </p>
-            <div className="space-y-2">
-              <Button variant="secondary" className="w-full justify-start">Upscale Resolution</Button>
-              <Button variant="secondary" className="w-full justify-start">Enhance Details</Button>
-              <Button variant="secondary" className="w-full justify-start">Fix Compression</Button>
-              <Button variant="secondary" className="w-full justify-start">Denoise</Button>
+          ))}
+          {isGenerating && (
+            <div className="flex justify-start">
+              <div className="bg-muted rounded-lg p-3 flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span className="text-sm">Generating image...</span>
+              </div>
             </div>
-          </TabsContent>
-
-          <TabsContent value="inpaint" className="p-4 space-y-3 mt-0">
-            <Textarea 
-              placeholder="Describe what to fill the masked area with..."
-              className="min-h-[100px]"
-            />
-            <Button className="w-full">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Inpaint Selection
-            </Button>
-          </TabsContent>
-
-          <TabsContent value="lighting" className="p-4 space-y-3 mt-0">
-            <p className="text-sm text-muted-foreground">
-              Adjust lighting and atmosphere with AI
-            </p>
-            <div className="space-y-2">
-              <Button variant="secondary" className="w-full justify-start">Auto Relight</Button>
-              <Button variant="secondary" className="w-full justify-start">Add Shadows</Button>
-              <Button variant="secondary" className="w-full justify-start">Golden Hour</Button>
-              <Button variant="secondary" className="w-full justify-start">Studio Lighting</Button>
-            </div>
-          </TabsContent>
+          )}
         </div>
-      </Tabs>
+      </ScrollArea>
+
+      {/* Input */}
+      <div className="p-4 border-t border-panel-border">
+        <div className="flex gap-2">
+          <Textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+            placeholder="Describe the image you want to generate..."
+            className="min-h-[80px] resize-none"
+            disabled={isGenerating}
+          />
+          <Button 
+            onClick={handleSend}
+            disabled={!input.trim() || isGenerating}
+            size="icon"
+            className="h-[80px] w-12"
+          >
+            {isGenerating ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Send className="w-5 h-5" />
+            )}
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          Enter to send • Shift+Enter for new line
+        </p>
+      </div>
     </div>
   );
 };

@@ -16,7 +16,7 @@ export type Tool =
   | 'measure'
   | 'magnifier';
 
-export type Panel = 'layers' | 'inspector' | 'effects' | 'color' | 'assets' | 'cursor-zoom' | 'microscope';
+export type Panel = 'layers' | 'inspector' | 'effects' | 'color' | 'assets' | 'cursor-zoom' | 'microscope' | 'ai-tools';
 
 export type PanelSize = 'full' | 'top' | 'bottom';
 

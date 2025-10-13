@@ -14,7 +14,8 @@ interface RightPanelsProps {
 import { AssetBrowserPanel } from './panels/AssetBrowserPanel';
 import { CursorZoomPanel } from './panels/CursorZoomPanel';
 import { MicroscopePanel } from './panels/MicroscopePanel';
-import { Package, ZoomIn, Microscope } from 'lucide-react';
+import { AIToolsPanel } from './panels/AIToolsPanel';
+import { Package, ZoomIn, Microscope, Sparkles } from 'lucide-react';
 import { PanelSize } from '@/lib/types';
 
 const panelConfigs: { icon: typeof Layers; panel: Panel; label: string }[] = [
@@ -23,6 +24,7 @@ const panelConfigs: { icon: typeof Layers; panel: Panel; label: string }[] = [
   { icon: Wand, panel: 'effects', label: 'Effects' },
   { icon: Palette, panel: 'color', label: 'Color' },
   { icon: Package, panel: 'assets', label: 'Assets' },
+  { icon: Sparkles, panel: 'ai-tools', label: 'AI Tools' },
   { icon: ZoomIn, panel: 'cursor-zoom', label: 'Cursor Zoom' },
   { icon: Microscope, panel: 'microscope', label: 'Microscope' },
 ];
@@ -52,10 +54,12 @@ export const RightPanels = ({ onLayerVisibilityToggle }: RightPanelsProps) => {
         return <FeatherEdgesPanel />;
       case 'assets':
         return <AssetBrowserPanel />;
+      case 'ai-tools':
+        return <AIToolsPanel />;
       case 'cursor-zoom':
-        return <div className="p-4"><CursorZoomPanel /></div>;
+        return <CursorZoomPanel size={panelSize === 'full' ? 'full' : 'half'} />;
       case 'microscope':
-        return <div className="p-4"><MicroscopePanel /></div>;
+        return <MicroscopePanel size={panelSize === 'full' ? 'full' : 'half'} />;
       default:
         return null;
     }
@@ -128,12 +132,16 @@ export const RightPanels = ({ onLayerVisibilityToggle }: RightPanelsProps) => {
                 </div>
               </Button>
               
-              {/* Hover Split Visual Indicator */}
+              {/* Hover Split Visual Indicator with Borders */}
               <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                {/* Left/Right Split */}
-                <div className="absolute top-0 bottom-0 left-1/2 w-px bg-primary/30" />
-                {/* Top/Bottom Split on right side */}
-                <div className="absolute top-1/2 right-0 left-1/2 h-px bg-primary/30" />
+                {/* Full Panel Zone (Left half) */}
+                <div className="absolute top-0 bottom-0 left-0 w-1/2 border-2 border-primary/40 rounded-l" />
+                
+                {/* Top Panel Zone (Right top) */}
+                <div className="absolute top-0 right-0 w-1/2 h-1/2 border-2 border-primary/40 rounded-tr" />
+                
+                {/* Bottom Panel Zone (Right bottom) */}
+                <div className="absolute bottom-0 right-0 w-1/2 h-1/2 border-2 border-primary/40 rounded-br" />
               </div>
             </div>
           </div>

@@ -9,41 +9,56 @@ export const ColorSpherePanel = () => {
 
   return (
     <div className="p-4 space-y-4">
-      {/* Color Sphere Visualization */}
+      {/* 3D Color Sphere Visualization - HSL Accurate */}
       <div className="aspect-square w-full max-w-[280px] mx-auto relative rounded-lg overflow-hidden">
+        {/* Base sphere with accurate HSL gradient */}
         <div 
-          className="absolute inset-0"
+          className="absolute inset-0 rounded-full"
           style={{
             background: `
-              radial-gradient(circle at 50% 25%, 
-                hsl(${hue}, ${saturation}%, ${lightness}%) 0%,
-                hsl(${hue}, ${saturation}%, ${lightness * 0.5}%) 50%,
-                hsl(${hue}, ${saturation}%, 10%) 100%
+              radial-gradient(circle at 30% 30%, 
+                hsl(${hue}, ${saturation}%, ${Math.min(lightness + 20, 100)}%) 0%,
+                hsl(${hue}, ${saturation}%, ${lightness}%) 40%,
+                hsl(${hue}, ${Math.max(saturation - 20, 0)}%, ${Math.max(lightness - 30, 0)}%) 100%
               )
             `,
           }}
         />
         
-        {/* White gradient overlay */}
+        {/* Saturation gradient (desaturates towards edges) */}
         <div 
-          className="absolute inset-0"
+          className="absolute inset-0 rounded-full"
           style={{
-            background: 'linear-gradient(to left, transparent 50%, rgba(255, 255, 255, 0.8) 100%)',
+            background: `
+              radial-gradient(circle at 50% 50%, 
+                transparent 0%,
+                hsl(${hue}, 0%, ${lightness}%) 100%
+              )
+            `,
+            opacity: (100 - saturation) / 200,
           }}
         />
         
-        {/* Black gradient overlay */}
+        {/* Specular highlight */}
         <div 
-          className="absolute inset-0"
+          className="absolute inset-0 rounded-full"
           style={{
-            background: 'linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.8) 100%)',
+            background: 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6) 0%, transparent 30%)',
+          }}
+        />
+        
+        {/* Shadow gradient for 3D effect */}
+        <div 
+          className="absolute inset-0 rounded-full"
+          style={{
+            background: 'radial-gradient(circle at 70% 70%, transparent 40%, rgba(0, 0, 0, 0.4) 100%)',
           }}
         />
         
         {/* Center color display */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div 
-            className="w-16 h-16 rounded-full border-4 border-white shadow-lg"
+            className="w-20 h-20 rounded-full border-4 border-white/80 shadow-xl"
             style={{ backgroundColor: currentColor }}
           />
         </div>

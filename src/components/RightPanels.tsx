@@ -15,7 +15,8 @@ import { AssetBrowserPanel } from './panels/AssetBrowserPanel';
 import { CursorZoomPanel } from './panels/CursorZoomPanel';
 import { MicroscopePanel } from './panels/MicroscopePanel';
 import { AIToolsPanel } from './panels/AIToolsPanel';
-import { Package, ZoomIn, Microscope, Sparkles } from 'lucide-react';
+import { AIImageGenPanel } from './panels/AIImageGenPanel';
+import { Package, ZoomIn, Microscope, Sparkles, ImagePlus } from 'lucide-react';
 import { PanelSize } from '@/lib/types';
 
 const panelConfigs: { icon: typeof Layers; panel: Panel; label: string }[] = [
@@ -25,6 +26,7 @@ const panelConfigs: { icon: typeof Layers; panel: Panel; label: string }[] = [
   { icon: Palette, panel: 'color', label: 'Color' },
   { icon: Package, panel: 'assets', label: 'Assets' },
   { icon: Sparkles, panel: 'ai-tools', label: 'AI Tools' },
+  { icon: ImagePlus, panel: 'ai-image-gen', label: 'AI Image Gen' },
   { icon: ZoomIn, panel: 'cursor-zoom', label: 'Cursor Zoom' },
   { icon: Microscope, panel: 'microscope', label: 'Microscope' },
 ];
@@ -56,6 +58,8 @@ export const RightPanels = ({ onLayerVisibilityToggle }: RightPanelsProps) => {
         return <AssetBrowserPanel />;
       case 'ai-tools':
         return <AIToolsPanel />;
+      case 'ai-image-gen':
+        return <AIImageGenPanel />;
       case 'cursor-zoom':
         return <CursorZoomPanel size={panelSize === 'full' ? 'full' : 'half'} />;
       case 'microscope':

@@ -13,14 +13,10 @@ export const CursorZoomPanel = ({ size = 'full' }: CursorZoomPanelProps) => {
   const [showBorder, setShowBorder] = useState(true);
   const [bufferSize, setBufferSize] = useState(20);
 
-  // Calculate aspect-safe view size
-  const viewSize = size === 'full' ? 'w-full h-full' : 'w-full h-full';
-  const aspectRatio = 1; // Square aspect ratio maintained
-
   return (
-    <div className={`${viewSize} bg-panel-bg border-2 border-panel-border rounded-lg shadow-xl overflow-hidden flex flex-col`}>
+    <div className="bg-panel-bg border-2 border-panel-border rounded-lg shadow-xl overflow-hidden flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-2 py-1 bg-toolbar border-b border-panel-border">
+      <div className="flex items-center justify-between px-2 py-1 bg-toolbar border-b border-panel-border shrink-0">
         <div className="flex items-center gap-1 text-xs">
           <ZoomIn className="w-3 h-3" />
           <span>{zoom}%</span>
@@ -57,16 +53,10 @@ export const CursorZoomPanel = ({ size = 'full' }: CursorZoomPanelProps) => {
         </Popover>
       </div>
 
-      {/* Zoom View - Maintains square aspect ratio */}
+      {/* Zoom View - Maintains square aspect ratio, fills available space */}
       <div className="relative flex-1 flex items-center justify-center p-2">
         <div 
-          className="relative bg-background"
-          style={{ 
-            width: '100%',
-            paddingBottom: '100%', // Square aspect ratio
-            maxWidth: size === 'full' ? '280px' : '140px',
-            maxHeight: size === 'full' ? '280px' : '140px',
-          }}
+          className="relative bg-background aspect-square w-full h-full max-w-full max-h-full"
         >
           <div className="absolute inset-0">
             {/* Canvas preview */}

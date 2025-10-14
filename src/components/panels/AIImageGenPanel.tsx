@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { Sparkles, Plus, Image as ImageIcon, Brush, Settings as SettingsIcon, Trash2, Edit, GripVertical, Upload, Download, Layers } from 'lucide-react';
+import { Sparkles, Plus, Image as ImageIcon, Brush, Settings as SettingsIcon, Trash2, GripVertical, Upload, Loader2, ChevronDown } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { ScrollArea } from '../ui/scroll-area';
-import { Slider } from '../ui/slider';
 import { Switch } from '../ui/switch';
 import { toast } from 'sonner';
 
@@ -14,7 +13,7 @@ interface Reference {
   type: 'image' | 'sketch';
   name: string;
   imageUrl?: string;
-  color?: string; // For sketch layers
+  color?: string;
   prompt: string;
   negativePrompt?: string;
   opacity: number;
@@ -40,6 +39,8 @@ export const AIImageGenPanel = () => {
   const [complexity, setComplexity] = useState(0);
   const [enhancedPrompt, setEnhancedPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
 
   const sketchColors = ['RED', 'BLUE', 'GREEN', 'YELLOW', 'PURPLE', 'ORANGE', 'CYAN', 'MAGENTA'];
 
@@ -66,8 +67,9 @@ export const AIImageGenPanel = () => {
   };
 
   const analyzePrompt = async () => {
+    setIsAnalyzing(true);
     toast.info('Analyzing composition...');
-    // Simulate AI analysis
+    
     setTimeout(() => {
       const complexityScore = Math.min(100, (basePrompt.length + references.length * 20));
       setComplexity(complexityScore);
@@ -81,6 +83,7 @@ export const AIImageGenPanel = () => {
       
       setEnhancedPrompt(assembled);
       setShowEnhanced(true);
+      setIsAnalyzing(false);
       toast.success('Analysis complete!');
     }, 1500);
   };
@@ -129,8 +132,8 @@ export const AIImageGenPanel = () => {
       const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
       
       if (imageUrl) {
+        setGeneratedImage(imageUrl);
         toast.success('Image generated successfully!');
-        // TODO: Display the generated image
       }
     } catch (error) {
       console.error('Generation error:', error);
@@ -142,326 +145,260 @@ export const AIImageGenPanel = () => {
 
   return (
     <div className="h-full flex flex-col bg-panel-bg">
-      {/* Header */}
-      <div className="px-4 py-3 border-b border-panel-border shrink-0">
+      <div className="px-3 py-2 border-b border-panel-border shrink-0">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-primary" />
-          <h3 className="font-semibold">Instructional Composition (ICE)</h3>
+          <Sparkles className="w-4 h-4 text-primary" />
+          <h3 className="font-semibold text-sm">ICE - Nano Banana</h3>
         </div>
-        <p className="text-xs text-muted-foreground mt-1">Nano Banana - Advanced Image Generation</p>
       </div>
 
       <ScrollArea className="flex-1">
-        <div className="p-4 space-y-4">
+        <div className="p-2 space-y-2">
           {/* Base Prompt */}
-          <div>
-            <label className="text-sm font-medium mb-2 block">User Idea (Base Prompt)</label>
+          <div className="space-y-1">
+            <label className="text-xs font-medium">Base Prompt</label>
             <Textarea
               value={basePrompt}
               onChange={(e) => setBasePrompt(e.target.value)}
-              placeholder="A futuristic cityscape at dusk, cinematic lighting..."
-              className="min-h-[80px]"
+              placeholder="A futuristic cityscape at dusk..."
+              className="min-h-[60px] text-xs resize-none"
             />
           </div>
 
           {/* Add Buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <Button
               variant="outline"
               size="sm"
-              className="flex-1"
+              className="flex-1 h-7 text-xs"
               onClick={() => addReference('image')}
             >
-              <ImageIcon className="w-4 h-4 mr-2" />
-              Add Reference
+              <ImageIcon className="w-3 h-3 mr-1" />
+              Reference
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className="flex-1"
+              className="flex-1 h-7 text-xs"
               onClick={() => addReference('sketch')}
             >
-              <Brush className="w-4 h-4 mr-2" />
-              Add Sketch Layer
+              <Brush className="w-3 h-3 mr-1" />
+              Sketch
             </Button>
           </div>
 
           {/* Composition Stack */}
           {references.length > 0 && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Composition Stack</label>
-              {references.map((ref, index) => (
+            <div className="space-y-1">
+              <label className="text-xs font-medium">Layers</label>
+              {references.map((ref) => (
                 <div
                   key={ref.id}
-                  className={`border rounded-lg p-3 bg-background ${
-                    selectedRef === ref.id ? 'border-primary' : 'border-border'
-                  }`}
-                  onClick={() => setSelectedRef(ref.id)}
+                  className="border rounded p-2 bg-background space-y-1"
                 >
-                  <div className="flex items-start gap-2">
-                    <GripVertical className="w-4 h-4 text-muted-foreground mt-1 cursor-move" />
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-center gap-2">
-                        {ref.type === 'sketch' ? (
-                          <div 
-                            className="w-4 h-4 rounded border-2"
-                            style={{ 
-                              backgroundColor: ref.color?.toLowerCase(),
-                              borderColor: ref.color?.toLowerCase() 
-                            }}
-                          />
-                        ) : (
-                          <ImageIcon className="w-4 h-4" />
-                        )}
-                        <Input
-                          value={ref.name}
-                          onChange={(e) => {
-                            setReferences(references.map(r => 
-                              r.id === ref.id ? { ...r, name: e.target.value } : r
-                            ));
-                          }}
-                          className="h-7 text-sm font-medium"
-                        />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() => removeReference(ref.id)}
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
-                      </div>
-
-                      {/* Reference Image Upload */}
-                      {ref.type === 'image' && !ref.imageUrl && (
-                        <Button variant="outline" size="sm" className="w-full">
-                          <Upload className="w-3 h-3 mr-2" />
-                          Upload Reference Image
-                        </Button>
-                      )}
-
-                      {/* Sketch Canvas */}
-                      {ref.type === 'sketch' && (
-                        <div className="bg-muted rounded p-2 text-xs text-center">
-                          <Brush className="w-8 h-8 mx-auto mb-1 opacity-50" />
-                          <p className="text-muted-foreground">Click Edit to open sketch canvas</p>
-                        </div>
-                      )}
-
-                      {/* Layer Prompt */}
-                      <Textarea
-                        value={ref.prompt}
-                        onChange={(e) => updateRefPrompt(ref.id, e.target.value)}
-                        placeholder={ref.type === 'sketch' 
-                          ? `The ${ref.color} sketch defines the pose and position for...`
-                          : 'Describe how to use this reference...'
-                        }
-                        className="min-h-[60px] text-xs"
+                  <div className="flex items-center gap-1">
+                    <GripVertical className="w-3 h-3 text-muted-foreground cursor-move shrink-0" />
+                    {ref.type === 'sketch' ? (
+                      <div 
+                        className="w-3 h-3 rounded border shrink-0"
+                        style={{ 
+                          backgroundColor: ref.color?.toLowerCase(),
+                          borderColor: ref.color?.toLowerCase() 
+                        }}
                       />
-
-                      {/* Negative Prompt (optional) */}
-                      <details className="text-xs">
-                        <summary className="cursor-pointer text-muted-foreground">Negative Prompt</summary>
-                        <Textarea
-                          value={ref.negativePrompt || ''}
-                          onChange={(e) => {
-                            setReferences(references.map(r => 
-                              r.id === ref.id ? { ...r, negativePrompt: e.target.value } : r
-                            ));
-                          }}
-                          placeholder="Avoid pastel colors..."
-                          className="min-h-[40px] text-xs mt-1"
-                        />
-                      </details>
-                    </div>
+                    ) : (
+                      <ImageIcon className="w-3 h-3 shrink-0" />
+                    )}
+                    <Input
+                      value={ref.name}
+                      onChange={(e) => {
+                        setReferences(references.map(r => 
+                          r.id === ref.id ? { ...r, name: e.target.value } : r
+                        ));
+                      }}
+                      className="h-6 text-xs flex-1"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 shrink-0"
+                      onClick={() => removeReference(ref.id)}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
                   </div>
+
+                  <Textarea
+                    value={ref.prompt}
+                    onChange={(e) => updateRefPrompt(ref.id, e.target.value)}
+                    placeholder={ref.type === 'sketch' 
+                      ? `The ${ref.color} sketch defines...`
+                      : 'Use this reference for...'
+                    }
+                    className="min-h-[40px] text-xs resize-none"
+                  />
                 </div>
               ))}
             </div>
           )}
 
           {/* Advanced Settings */}
-          <div className="border rounded-lg">
+          <div className="border rounded">
             <button
-              className="w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
+              className="w-full flex items-center justify-between p-2 hover:bg-muted/50 transition-colors"
               onClick={() => setShowAdvanced(!showAdvanced)}
             >
-              <div className="flex items-center gap-2">
-                <SettingsIcon className="w-4 h-4" />
-                <span className="text-sm font-medium">Advanced Settings</span>
+              <div className="flex items-center gap-1">
+                <SettingsIcon className="w-3 h-3" />
+                <span className="text-xs font-medium">Advanced</span>
               </div>
-              <span className="text-xs text-muted-foreground">
-                {showAdvanced ? '▼' : '▶'}
-              </span>
+              <ChevronDown className={`w-3 h-3 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
             </button>
             
             {showAdvanced && (
-              <div className="p-3 border-t space-y-4">
-                {/* Camera Settings */}
-                <div className="space-y-2">
-                  <label className="text-xs font-medium">Camera Settings</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    <Select value={cameraLens} onValueChange={setCameraLens}>
-                      <SelectTrigger className="h-8 text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="24mm">24mm</SelectItem>
-                        <SelectItem value="35mm">35mm</SelectItem>
-                        <SelectItem value="50mm">50mm</SelectItem>
-                        <SelectItem value="85mm">85mm</SelectItem>
-                        <SelectItem value="135mm">135mm</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select value={aperture} onValueChange={setAperture}>
-                      <SelectTrigger className="h-8 text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="f/1.4">f/1.4</SelectItem>
-                        <SelectItem value="f/1.8">f/1.8</SelectItem>
-                        <SelectItem value="f/2.8">f/2.8</SelectItem>
-                        <SelectItem value="f/4">f/4</SelectItem>
-                        <SelectItem value="f/5.6">f/5.6</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select value={shutter} onValueChange={setShutter}>
-                      <SelectTrigger className="h-8 text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1/30s">1/30s</SelectItem>
-                        <SelectItem value="1/60s">1/60s</SelectItem>
-                        <SelectItem value="1/125s">1/125s</SelectItem>
-                        <SelectItem value="1/250s">1/250s</SelectItem>
-                        <SelectItem value="1/500s">1/500s</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+              <div className="p-2 border-t space-y-2">
+                <div className="grid grid-cols-3 gap-1">
+                  <Select value={cameraLens} onValueChange={setCameraLens}>
+                    <SelectTrigger className="h-6 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="24mm">24mm</SelectItem>
+                      <SelectItem value="50mm">50mm</SelectItem>
+                      <SelectItem value="85mm">85mm</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={aperture} onValueChange={setAperture}>
+                    <SelectTrigger className="h-6 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="f/1.4">f/1.4</SelectItem>
+                      <SelectItem value="f/1.8">f/1.8</SelectItem>
+                      <SelectItem value="f/2.8">f/2.8</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={shutter} onValueChange={setShutter}>
+                    <SelectTrigger className="h-6 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1/60s">1/60s</SelectItem>
+                      <SelectItem value="1/125s">1/125s</SelectItem>
+                      <SelectItem value="1/250s">1/250s</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                {/* Smart Aspect Ratio */}
-                <div className="space-y-2">
-                  <label className="text-xs font-medium">Smart Aspect Ratio System</label>
-                  <div className="flex items-center gap-2">
-                    <Select value={aspectRatio} onValueChange={setAspectRatio}>
-                      <SelectTrigger className="h-8 text-xs flex-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1:1">1:1 Square</SelectItem>
-                        <SelectItem value="4:3">4:3 Standard</SelectItem>
-                        <SelectItem value="16:9">16:9 Widescreen</SelectItem>
-                        <SelectItem value="21:9">21:9 Ultrawide</SelectItem>
-                        <SelectItem value="9:16">9:16 Portrait</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <div className="flex items-center gap-2">
-                      <Switch 
-                        checked={enforceAspect} 
-                        onCheckedChange={setEnforceAspect}
-                      />
-                      <span className="text-xs">Enforce on refs</span>
-                    </div>
-                  </div>
+                <div className="flex items-center gap-1">
+                  <Select value={aspectRatio} onValueChange={setAspectRatio}>
+                    <SelectTrigger className="h-6 text-xs flex-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1:1">1:1</SelectItem>
+                      <SelectItem value="16:9">16:9</SelectItem>
+                      <SelectItem value="9:16">9:16</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Switch checked={enforceAspect} onCheckedChange={setEnforceAspect} />
+                  <span className="text-xs shrink-0">Enforce</span>
                 </div>
 
-                {/* Style & Quality */}
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <label className="text-xs font-medium">Style</label>
-                    <Select value={style} onValueChange={setStyle}>
-                      <SelectTrigger className="h-8 text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="cinematic">Cinematic</SelectItem>
-                        <SelectItem value="photorealistic">Photorealistic</SelectItem>
-                        <SelectItem value="artistic">Artistic</SelectItem>
-                        <SelectItem value="anime">Anime</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-medium">Quality</label>
-                    <Select value={quality} onValueChange={setQuality}>
-                      <SelectTrigger className="h-8 text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="draft">Draft</SelectItem>
-                        <SelectItem value="standard">Standard</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
-                        <SelectItem value="ultra">Ultra</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="grid grid-cols-2 gap-1">
+                  <Select value={style} onValueChange={setStyle}>
+                    <SelectTrigger className="h-6 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cinematic">Cinematic</SelectItem>
+                      <SelectItem value="photorealistic">Photo</SelectItem>
+                      <SelectItem value="artistic">Artistic</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={quality} onValueChange={setQuality}>
+                    <SelectTrigger className="h-6 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="standard">Standard</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="ultra">Ultra</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Analysis & Final Prompt */}
-          <div className="space-y-3">
+          {/* Analysis */}
+          <div className="space-y-2">
             <Button
               variant="outline"
-              className="w-full"
+              size="sm"
+              className="w-full h-7"
               onClick={analyzePrompt}
+              disabled={isAnalyzing || !basePrompt}
             >
-              <Sparkles className="w-4 h-4 mr-2" />
-              Analyze Prompt (AI Co-pilot)
+              {isAnalyzing ? (
+                <>
+                  <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  Analyze
+                </>
+              )}
             </Button>
 
             {showEnhanced && (
-              <>
-                <div className="space-y-1">
-                  <label className="text-xs font-medium">Complexity Meter</label>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-primary transition-all"
-                        style={{ width: `${complexity}%` }}
-                      />
-                    </div>
-                    <span className="text-xs font-mono">{complexity}%</span>
+              <div className="space-y-1 border rounded p-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-1.5 bg-secondary rounded overflow-hidden">
+                    <div 
+                      className="h-full bg-primary transition-all"
+                      style={{ width: `${complexity}%` }}
+                    />
                   </div>
+                  <span className="text-xs font-medium shrink-0">{complexity}%</span>
                 </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-medium">Assembled Prompt (Read-only)</label>
-                  <Textarea
-                    value={enhancedPrompt}
-                    readOnly
-                    className="min-h-[120px] text-xs font-mono bg-muted"
-                  />
-                </div>
-              </>
+                
+                <Textarea
+                  value={enhancedPrompt}
+                  readOnly
+                  className="min-h-[60px] text-xs font-mono bg-secondary resize-none"
+                />
+              </div>
             )}
           </div>
+
+          {/* Generate Button */}
+          <Button 
+            onClick={generateImage}
+            disabled={isGenerating || !basePrompt}
+            className="w-full h-8"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              'GENERATE'
+            )}
+          </Button>
+
+          {/* Generated Image */}
+          {generatedImage && (
+            <div className="space-y-1 border rounded p-2">
+              <label className="text-xs font-medium">Result</label>
+              <img src={generatedImage} alt="Generated" className="w-full rounded" />
+            </div>
+          )}
         </div>
       </ScrollArea>
-
-      {/* Generate Button */}
-      <div className="p-4 border-t border-panel-border shrink-0">
-        <Button
-          className="w-full"
-          size="lg"
-          onClick={generateImage}
-          disabled={isGenerating || !basePrompt.trim()}
-        >
-          {isGenerating ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-              Generating...
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-5 h-5 mr-2" />
-              GENERATE
-            </>
-          )}
-        </Button>
-      </div>
     </div>
   );
 };

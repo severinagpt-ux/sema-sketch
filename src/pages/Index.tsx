@@ -8,6 +8,7 @@ import { MiniLayersBar } from '@/components/MiniLayersBar';
 import { SettingsPanel } from '@/components/panels/SettingsPanel';
 import { Timeline } from '@/pages/Timeline';
 import { Tool, Layer, AppView } from '@/lib/types';
+import { ToolProvider } from '@/contexts/ToolContext';
 
 const Index = () => {
   const [activeTool, setActiveTool] = useState<Tool>('select');
@@ -66,7 +67,8 @@ const Index = () => {
   };
 
   return (
-    <div className="h-screen w-full flex flex-col overflow-hidden">
+    <ToolProvider>
+      <div className="h-screen w-full flex flex-col overflow-hidden">
       <TopBar 
         projectName="Untitled Project"
         magnifier1={magnifier1}
@@ -88,14 +90,12 @@ const Index = () => {
             />
             
             <LeftToolbar 
-              activeTool={activeTool}
               onToolChange={setActiveTool}
             />
             
             <div className="flex-1 flex flex-col">
               <div className="flex-1 flex overflow-hidden">
                 <Canvas
-                  activeTool={activeTool}
                   zoom={currentZoom}
                 />
                 
@@ -129,8 +129,8 @@ const Index = () => {
           </div>
         )}
       </div>
-
     </div>
+    </ToolProvider>
   );
 };
 

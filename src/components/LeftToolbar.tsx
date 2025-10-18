@@ -5,9 +5,9 @@ import {
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Tool } from '@/lib/types';
+import { useToolContext } from '@/contexts/ToolContext';
 
 interface LeftToolbarProps {
-  activeTool: Tool;
   onToolChange: (tool: Tool) => void;
 }
 
@@ -30,7 +30,13 @@ const tools: { icon: typeof MousePointer2; tool: Tool; label: string }[] = [
   { icon: ZoomIn, tool: 'magnifier', label: 'Magnifier' },
 ];
 
-export const LeftToolbar = ({ activeTool, onToolChange }: LeftToolbarProps) => {
+export const LeftToolbar = ({ onToolChange }: LeftToolbarProps) => {
+  const { activeTool, setActiveTool } = useToolContext();
+  
+  const handleToolChange = (tool: Tool) => {
+    setActiveTool(tool);
+    onToolChange(tool);
+  };
   return (
     <div className="w-14 bg-toolbar border-r border-panel-border flex flex-col items-center py-2 gap-1">
       {tools.map(({ icon: Icon, tool, label }) => (
@@ -39,7 +45,7 @@ export const LeftToolbar = ({ activeTool, onToolChange }: LeftToolbarProps) => {
           variant={activeTool === tool ? "default" : "ghost"}
           size="icon"
           className="tool-button"
-          onClick={() => onToolChange(tool)}
+          onClick={() => handleToolChange(tool)}
           title={label}
         >
           <Icon className="w-5 h-5" />

@@ -56,7 +56,7 @@ export const CursorZoomPanel = ({ size = 'full' }: CursorZoomPanelProps) => {
       {/* Zoom View - Maintains square aspect ratio, centered in panel */}
       <div className="relative flex-1 flex items-center justify-center p-2">
         <div 
-          className="relative bg-background aspect-square max-w-full max-h-full"
+          className="relative bg-background aspect-square h-full"
         >
           <div className="absolute inset-0">
             {/* Canvas preview */}

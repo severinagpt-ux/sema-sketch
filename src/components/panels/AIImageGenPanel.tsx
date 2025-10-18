@@ -145,23 +145,23 @@ export const AIImageGenPanel = () => {
 
   return (
     <div className="h-full flex flex-col bg-panel-bg">
-      <div className="px-3 py-2 border-b border-panel-border shrink-0">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-primary" />
-          <h3 className="font-semibold text-sm">ICE - Nano Banana</h3>
+      <div className="px-2 py-1.5 border-b border-panel-border shrink-0">
+        <div className="flex items-center gap-1.5">
+          <Sparkles className="w-3.5 h-3.5 text-primary" />
+          <h3 className="font-semibold text-xs">ICE - Nano Banana</h3>
         </div>
       </div>
 
       <ScrollArea className="flex-1">
-        <div className="p-2 space-y-2">
+        <div className="p-1.5 space-y-1.5">
           {/* Base Prompt */}
-          <div className="space-y-1">
-            <label className="text-xs font-medium">Base Prompt</label>
+          <div className="space-y-0.5">
+            <label className="text-[10px] font-medium">Base Prompt</label>
             <Textarea
               value={basePrompt}
               onChange={(e) => setBasePrompt(e.target.value)}
               placeholder="A futuristic cityscape at dusk..."
-              className="min-h-[60px] text-xs resize-none"
+              className="min-h-[50px] text-[10px] resize-none"
             />
           </div>
 
@@ -170,44 +170,44 @@ export const AIImageGenPanel = () => {
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 h-7 text-xs"
+              className="flex-1 h-6 text-[10px]"
               onClick={() => addReference('image')}
             >
-              <ImageIcon className="w-3 h-3 mr-1" />
-              Reference
+              <ImageIcon className="w-2.5 h-2.5 mr-0.5" />
+              Ref
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 h-7 text-xs"
+              className="flex-1 h-6 text-[10px]"
               onClick={() => addReference('sketch')}
             >
-              <Brush className="w-3 h-3 mr-1" />
+              <Brush className="w-2.5 h-2.5 mr-0.5" />
               Sketch
             </Button>
           </div>
 
           {/* Composition Stack */}
           {references.length > 0 && (
-            <div className="space-y-1">
-              <label className="text-xs font-medium">Layers</label>
+            <div className="space-y-0.5">
+              <label className="text-[10px] font-medium">Layers</label>
               {references.map((ref) => (
                 <div
                   key={ref.id}
-                  className="border rounded p-2 bg-background space-y-1"
+                  className="border rounded p-1 bg-background space-y-0.5"
                 >
-                  <div className="flex items-center gap-1">
-                    <GripVertical className="w-3 h-3 text-muted-foreground cursor-move shrink-0" />
+                  <div className="flex items-center gap-0.5">
+                    <GripVertical className="w-2.5 h-2.5 text-muted-foreground cursor-move shrink-0" />
                     {ref.type === 'sketch' ? (
                       <div 
-                        className="w-3 h-3 rounded border shrink-0"
+                        className="w-2.5 h-2.5 rounded border shrink-0"
                         style={{ 
                           backgroundColor: ref.color?.toLowerCase(),
                           borderColor: ref.color?.toLowerCase() 
                         }}
                       />
                     ) : (
-                      <ImageIcon className="w-3 h-3 shrink-0" />
+                      <ImageIcon className="w-2.5 h-2.5 shrink-0" />
                     )}
                     <Input
                       value={ref.name}
@@ -216,15 +216,15 @@ export const AIImageGenPanel = () => {
                           r.id === ref.id ? { ...r, name: e.target.value } : r
                         ));
                       }}
-                      className="h-6 text-xs flex-1"
+                      className="h-5 text-[10px] flex-1"
                     />
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6 shrink-0"
+                      className="h-5 w-5 shrink-0"
                       onClick={() => removeReference(ref.id)}
                     >
-                      <Trash2 className="w-3 h-3" />
+                      <Trash2 className="w-2.5 h-2.5" />
                     </Button>
                   </div>
 
@@ -235,7 +235,7 @@ export const AIImageGenPanel = () => {
                       ? `The ${ref.color} sketch defines...`
                       : 'Use this reference for...'
                     }
-                    className="min-h-[40px] text-xs resize-none"
+                    className="min-h-[35px] text-[10px] resize-none"
                   />
                 </div>
               ))}
@@ -245,21 +245,21 @@ export const AIImageGenPanel = () => {
           {/* Advanced Settings */}
           <div className="border rounded">
             <button
-              className="w-full flex items-center justify-between p-2 hover:bg-muted/50 transition-colors"
+              className="w-full flex items-center justify-between p-1 hover:bg-muted/50 transition-colors"
               onClick={() => setShowAdvanced(!showAdvanced)}
             >
-              <div className="flex items-center gap-1">
-                <SettingsIcon className="w-3 h-3" />
-                <span className="text-xs font-medium">Advanced</span>
+              <div className="flex items-center gap-0.5">
+                <SettingsIcon className="w-2.5 h-2.5" />
+                <span className="text-[10px] font-medium">Advanced</span>
               </div>
-              <ChevronDown className={`w-3 h-3 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-2.5 h-2.5 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
             </button>
             
             {showAdvanced && (
-              <div className="p-2 border-t space-y-2">
-                <div className="grid grid-cols-3 gap-1">
+              <div className="p-1 border-t space-y-1">
+                <div className="grid grid-cols-3 gap-0.5">
                   <Select value={cameraLens} onValueChange={setCameraLens}>
-                    <SelectTrigger className="h-6 text-xs">
+                    <SelectTrigger className="h-5 text-[10px]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -269,7 +269,7 @@ export const AIImageGenPanel = () => {
                     </SelectContent>
                   </Select>
                   <Select value={aperture} onValueChange={setAperture}>
-                    <SelectTrigger className="h-6 text-xs">
+                    <SelectTrigger className="h-5 text-[10px]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -279,7 +279,7 @@ export const AIImageGenPanel = () => {
                     </SelectContent>
                   </Select>
                   <Select value={shutter} onValueChange={setShutter}>
-                    <SelectTrigger className="h-6 text-xs">
+                    <SelectTrigger className="h-5 text-[10px]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -290,9 +290,9 @@ export const AIImageGenPanel = () => {
                   </Select>
                 </div>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-0.5">
                   <Select value={aspectRatio} onValueChange={setAspectRatio}>
-                    <SelectTrigger className="h-6 text-xs flex-1">
+                    <SelectTrigger className="h-5 text-[10px] flex-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -301,13 +301,13 @@ export const AIImageGenPanel = () => {
                       <SelectItem value="9:16">9:16</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Switch checked={enforceAspect} onCheckedChange={setEnforceAspect} />
-                  <span className="text-xs shrink-0">Enforce</span>
+                  <Switch checked={enforceAspect} onCheckedChange={setEnforceAspect} className="scale-75" />
+                  <span className="text-[10px] shrink-0">Enforce</span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-1">
+                <div className="grid grid-cols-2 gap-0.5">
                   <Select value={style} onValueChange={setStyle}>
-                    <SelectTrigger className="h-6 text-xs">
+                    <SelectTrigger className="h-5 text-[10px]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -317,7 +317,7 @@ export const AIImageGenPanel = () => {
                     </SelectContent>
                   </Select>
                   <Select value={quality} onValueChange={setQuality}>
-                    <SelectTrigger className="h-6 text-xs">
+                    <SelectTrigger className="h-5 text-[10px]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -332,43 +332,43 @@ export const AIImageGenPanel = () => {
           </div>
 
           {/* Analysis */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Button
               variant="outline"
               size="sm"
-              className="w-full h-7"
+              className="w-full h-6"
               onClick={analyzePrompt}
               disabled={isAnalyzing || !basePrompt}
             >
               {isAnalyzing ? (
                 <>
-                  <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                  Analyzing...
+                  <Loader2 className="w-2.5 h-2.5 mr-0.5 animate-spin" />
+                  <span className="text-[10px]">Analyzing...</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-3 h-3 mr-1" />
-                  Analyze
+                  <Sparkles className="w-2.5 h-2.5 mr-0.5" />
+                  <span className="text-[10px]">Analyze</span>
                 </>
               )}
             </Button>
 
             {showEnhanced && (
-              <div className="space-y-1 border rounded p-2">
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 h-1.5 bg-secondary rounded overflow-hidden">
+              <div className="space-y-0.5 border rounded p-1">
+                <div className="flex items-center gap-1">
+                  <div className="flex-1 h-1 bg-secondary rounded overflow-hidden">
                     <div 
                       className="h-full bg-primary transition-all"
                       style={{ width: `${complexity}%` }}
                     />
                   </div>
-                  <span className="text-xs font-medium shrink-0">{complexity}%</span>
+                  <span className="text-[10px] font-medium shrink-0">{complexity}%</span>
                 </div>
                 
                 <Textarea
                   value={enhancedPrompt}
                   readOnly
-                  className="min-h-[60px] text-xs font-mono bg-secondary resize-none"
+                  className="min-h-[50px] text-[9px] font-mono bg-secondary resize-none"
                 />
               </div>
             )}
@@ -378,22 +378,22 @@ export const AIImageGenPanel = () => {
           <Button 
             onClick={generateImage}
             disabled={isGenerating || !basePrompt}
-            className="w-full h-8"
+            className="w-full h-7"
           >
             {isGenerating ? (
               <>
-                <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                Generating...
+                <Loader2 className="w-3 h-3 mr-0.5 animate-spin" />
+                <span className="text-[10px]">Generating...</span>
               </>
             ) : (
-              'GENERATE'
+              <span className="text-[10px] font-semibold">GENERATE</span>
             )}
           </Button>
 
           {/* Generated Image */}
           {generatedImage && (
-            <div className="space-y-1 border rounded p-2">
-              <label className="text-xs font-medium">Result</label>
+            <div className="space-y-0.5 border rounded p-1">
+              <label className="text-[10px] font-medium">Result</label>
               <img src={generatedImage} alt="Generated" className="w-full rounded" />
             </div>
           )}

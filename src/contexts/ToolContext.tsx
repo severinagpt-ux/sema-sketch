@@ -36,7 +36,7 @@ export const ToolProvider = ({ children }: { children: ReactNode }) => {
     opacity: 100,
     hardness: 75,
     flow: 100,
-    color: 'hsl(var(--primary))',
+    color: '#000000',
     pressureSensitivity: false,
     smoothing: true,
     autoErase: false

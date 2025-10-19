@@ -76,9 +76,21 @@ export const useCanvas = (tool: Tool, settings: CanvasSettings) => {
     if (hardness < 100) {
       const gradient = ctx.createRadialGradient(x, y, 0, x, y, brushSize / 2);
       const alpha = ctx.globalAlpha;
-      gradient.addColorStop(0, color.replace(')', `, ${alpha})`).replace('hsl', 'hsla'));
-      gradient.addColorStop(hardness / 100, color.replace(')', `, ${alpha * 0.5})`).replace('hsl', 'hsla'));
-      gradient.addColorStop(1, color.replace(')', ', 0)').replace('hsl', 'hsla'));
+      
+      // Create color with alpha
+      const colorWithAlpha = (a: number) => {
+        if (color.startsWith('#')) {
+          const r = parseInt(color.slice(1, 3), 16);
+          const g = parseInt(color.slice(3, 5), 16);
+          const b = parseInt(color.slice(5, 7), 16);
+          return `rgba(${r}, ${g}, ${b}, ${a})`;
+        }
+        return color;
+      };
+      
+      gradient.addColorStop(0, colorWithAlpha(alpha));
+      gradient.addColorStop(hardness / 100, colorWithAlpha(alpha * 0.5));
+      gradient.addColorStop(1, colorWithAlpha(0));
       ctx.strokeStyle = gradient;
     }
     
@@ -86,11 +98,14 @@ export const useCanvas = (tool: Tool, settings: CanvasSettings) => {
     ctx.moveTo(lastPos.x, lastPos.y);
     ctx.lineTo(x, y);
     ctx.stroke();
+    ctx.globalAlpha = 1;
   }, [settings, lastPos]);
 
   const drawEraser = useCallback((ctx: CanvasRenderingContext2D, x: number, y: number) => {
     const { brushSize } = settings;
+    ctx.save();
     ctx.globalCompositeOperation = 'destination-out';
+    ctx.globalAlpha = 1;
     ctx.lineWidth = brushSize;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -100,14 +115,15 @@ export const useCanvas = (tool: Tool, settings: CanvasSettings) => {
     ctx.lineTo(x, y);
     ctx.stroke();
     
-    ctx.globalCompositeOperation = 'source-over';
+    ctx.restore();
   }, [settings, lastPos]);
 
   const drawPen = useCallback((ctx: CanvasRenderingContext2D, x: number, y: number) => {
-    const { brushSize, color } = settings;
-    ctx.globalAlpha = 1;
+    const { brushSize, color, opacity } = settings;
+    ctx.save();
+    ctx.globalAlpha = opacity / 100;
     ctx.strokeStyle = color;
-    ctx.lineWidth = brushSize;
+    ctx.lineWidth = Math.max(1, brushSize * 0.5);
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     
@@ -115,6 +131,7 @@ export const useCanvas = (tool: Tool, settings: CanvasSettings) => {
     ctx.moveTo(lastPos.x, lastPos.y);
     ctx.lineTo(x, y);
     ctx.stroke();
+    ctx.restore();
   }, [settings, lastPos]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -147,15 +164,24 @@ export const useCanvas = (tool: Tool, settings: CanvasSettings) => {
         drawPen(ctx, pos.x, pos.y);
         break;
       case 'dodge-burn':
+        ctx.save();
         ctx.globalCompositeOperation = e.shiftKey ? 'multiply' : 'screen';
-        drawBrush(ctx, pos.x, pos.y);
-        ctx.globalCompositeOperation = 'source-over';
+        ctx.globalAlpha = 0.1;
+        ctx.fillStyle = e.shiftKey ? '#000000' : '#ffffff';
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, settings.brushSize / 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
         break;
       case 'blur-sharpen':
-        // Simplified blur/sharpen - would need proper convolution in production
-        ctx.filter = e.shiftKey ? 'blur(2px)' : 'contrast(1.5)';
-        drawBrush(ctx, pos.x, pos.y);
-        ctx.filter = 'none';
+        ctx.save();
+        ctx.filter = e.shiftKey ? 'blur(3px)' : 'contrast(1.2) brightness(1.05)';
+        ctx.globalAlpha = 0.5;
+        ctx.drawImage(canvas, pos.x - settings.brushSize, pos.y - settings.brushSize, 
+          settings.brushSize * 2, settings.brushSize * 2, 
+          pos.x - settings.brushSize, pos.y - settings.brushSize, 
+          settings.brushSize * 2, settings.brushSize * 2);
+        ctx.restore();
         break;
     }
     

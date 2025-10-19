@@ -5,6 +5,7 @@ import { Panel } from '@/lib/types';
 import { LayersPanel } from './panels/LayersPanel';
 import { InspectorPanel } from './panels/InspectorPanel';
 import { ColorSpherePanel } from './panels/ColorSpherePanel';
+import { ColorPickerPanel } from './panels/ColorPickerPanel';
 import { FeatherEdgesPanel } from './panels/FeatherEdgesPanel';
 
 interface RightPanelsProps {
@@ -22,8 +23,8 @@ import { PanelSize } from '@/lib/types';
 const panelConfigs: { icon: typeof Layers; panel: Panel; label: string }[] = [
   { icon: Layers, panel: 'layers', label: 'Layers' },
   { icon: Info, panel: 'inspector', label: 'Inspector' },
+  { icon: Palette, panel: 'color', label: 'Color Picker' },
   { icon: Wand, panel: 'effects', label: 'Effects' },
-  { icon: Palette, panel: 'color', label: 'Color' },
   { icon: Package, panel: 'assets', label: 'Assets' },
   { icon: Sparkles, panel: 'ai-tools', label: 'AI Tools' },
   { icon: ImagePlus, panel: 'ai-image-gen', label: 'AI Image Gen' },
@@ -51,7 +52,7 @@ export const RightPanels = ({ onLayerVisibilityToggle }: RightPanelsProps) => {
       case 'inspector':
         return <InspectorPanel />;
       case 'color':
-        return <ColorSpherePanel />;
+        return <ColorPickerPanel />;
       case 'effects':
         return <FeatherEdgesPanel />;
       case 'assets':

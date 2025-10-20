@@ -79,158 +79,35 @@ export const useCanvas = (tool: Tool, settings: CanvasSettings) => {
     };
   }, []);
 
-  // Catmull-Rom spline interpolation for smooth curves
-  const catmullRomSpline = useCallback((points: Point[], t: number): Point => {
-    const p0 = points[0];
-    const p1 = points[1];
-    const p2 = points[2];
-    const p3 = points[3];
-    
-    const t2 = t * t;
-    const t3 = t2 * t;
-    
-    const x = 0.5 * (
-      (2 * p1.x) +
-      (-p0.x + p2.x) * t +
-      (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 +
-      (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3
-    );
-    
-    const y = 0.5 * (
-      (2 * p1.y) +
-      (-p0.y + p2.y) * t +
-      (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 +
-      (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3
-    );
-    
-    return { x, y, time: Date.now() };
-  }, []);
-
-  // Apply elasticity (sine wave modulation) to path
-  const applyElasticity = useCallback((x: number, y: number, progress: number): Point => {
-    const elasticity = settings.pathElasticity / 100;
-    const frequency = 2 + elasticity * 3;
-    const amplitude = elasticity * 5;
-    
-    const perpOffset = Math.sin(progress * Math.PI * frequency) * amplitude;
-    
-    return { x: x + perpOffset, y: y + perpOffset, time: Date.now() };
-  }, [settings.pathElasticity]);
-
-  // Calculate speed between two points
-  const calculateSpeed = useCallback((p1: Point, p2: Point): number => {
-    const dx = p2.x - p1.x;
-    const dy = p2.y - p1.y;
-    const dt = Math.max(1, p2.time - p1.time);
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    return distance / dt;
-  }, []);
-
-  // Draw a rotated, stretched brush stamp
-  const drawBrushStamp = useCallback((
-    ctx: CanvasRenderingContext2D, 
-    x: number, 
-    y: number, 
-    angle: number,
-    speed: number = 1
-  ) => {
-    const { brushSize, opacity, hardness, flow, color, speedDynamics, speedAffectsSize, speedAffectsOpacity } = settings;
-    
-    // Speed-based dynamics
-    const speedFactor = speedDynamics ? Math.min(speed * 0.1, 2) : 1;
-    const dynamicSize = speedAffectsSize ? brushSize * (0.5 + speedFactor * 0.5) : brushSize;
-    const dynamicOpacity = speedAffectsOpacity ? (opacity / 100) * (0.5 + speedFactor * 0.5) : (opacity / 100);
+  // Simple smooth drawing with quadratic curves
+  const drawBrush = useCallback((ctx: CanvasRenderingContext2D, x: number, y: number) => {
+    const { brushSize, opacity, hardness, flow, color } = settings;
     
     ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(angle);
+    ctx.globalAlpha = (opacity / 100) * (flow / 100);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = brushSize;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
     
-    ctx.globalAlpha = dynamicOpacity * (flow / 100);
-    
-    if (hardness < 100) {
-      const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, dynamicSize / 2);
+    // Smooth line using quadratic curves
+    if (settings.smoothing) {
+      const midX = (lastPos.x + x) / 2;
+      const midY = (lastPos.y + y) / 2;
       
-      const colorWithAlpha = (a: number) => {
-        if (color.startsWith('#')) {
-          const r = parseInt(color.slice(1, 3), 16);
-          const g = parseInt(color.slice(3, 5), 16);
-          const b = parseInt(color.slice(5, 7), 16);
-          return `rgba(${r}, ${g}, ${b}, ${a})`;
-        }
-        return color;
-      };
-      
-      gradient.addColorStop(0, colorWithAlpha(ctx.globalAlpha));
-      gradient.addColorStop(hardness / 100, colorWithAlpha(ctx.globalAlpha * 0.5));
-      gradient.addColorStop(1, colorWithAlpha(0));
-      ctx.fillStyle = gradient;
-    } else {
-      ctx.fillStyle = color;
-    }
-    
-    // Draw ellipse stretched along movement direction
-    ctx.beginPath();
-    ctx.ellipse(0, 0, dynamicSize / 2, dynamicSize / 3, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.restore();
-  }, [settings]);
-
-  // Main brush drawing with smooth path
-  const drawBrush = useCallback((ctx: CanvasRenderingContext2D, currentPoint: Point) => {
-    pathPointsRef.current.push(currentPoint);
-    
-    // Calculate speed
-    if (pathPointsRef.current.length > 1) {
-      const prevPoint = pathPointsRef.current[pathPointsRef.current.length - 2];
-      currentPoint.speed = calculateSpeed(prevPoint, currentPoint);
-    }
-    
-    // Need at least 4 points for Catmull-Rom
-    if (pathPointsRef.current.length < 4) {
-      // Draw simple line for first few points
-      ctx.globalAlpha = (settings.opacity / 100) * (settings.flow / 100);
-      ctx.strokeStyle = settings.color;
-      ctx.lineWidth = settings.brushSize;
-      ctx.lineCap = 'round';
       ctx.beginPath();
       ctx.moveTo(lastPos.x, lastPos.y);
-      ctx.lineTo(currentPoint.x, currentPoint.y);
+      ctx.quadraticCurveTo(lastPos.x, lastPos.y, midX, midY);
       ctx.stroke();
-      return;
-    }
-    
-    // Use smoothing if enabled
-    if (settings.smoothing && settings.smoothingStrength > 0) {
-      const points = pathPointsRef.current.slice(-4);
-      const steps = Math.max(5, Math.floor(settings.smoothingStrength / 10));
-      
-      for (let i = 0; i < steps; i++) {
-        const t = i / steps;
-        let interpolated = catmullRomSpline(points, t);
-        
-        // Apply elasticity
-        if (settings.pathElasticity > 0) {
-          interpolated = applyElasticity(interpolated.x, interpolated.y, t);
-        }
-        
-        // Calculate angle from previous to current point
-        const prevPoint = i === 0 ? points[1] : catmullRomSpline(points, (i - 1) / steps);
-        const angle = Math.atan2(interpolated.y - prevPoint.y, interpolated.x - prevPoint.x);
-        
-        drawBrushStamp(ctx, interpolated.x, interpolated.y, angle, currentPoint.speed || 1);
-      }
     } else {
-      // Direct stamping without smoothing
-      const angle = Math.atan2(currentPoint.y - lastPos.y, currentPoint.x - lastPos.x);
-      drawBrushStamp(ctx, currentPoint.x, currentPoint.y, angle, currentPoint.speed || 1);
+      ctx.beginPath();
+      ctx.moveTo(lastPos.x, lastPos.y);
+      ctx.lineTo(x, y);
+      ctx.stroke();
     }
     
-    // Keep path buffer reasonable
-    if (pathPointsRef.current.length > 20) {
-      pathPointsRef.current = pathPointsRef.current.slice(-10);
-    }
-  }, [settings, lastPos, catmullRomSpline, applyElasticity, calculateSpeed, drawBrushStamp]);
+    ctx.restore();
+  }, [settings, lastPos]);
 
   const drawEraser = useCallback((ctx: CanvasRenderingContext2D, x: number, y: number) => {
     const { brushSize } = settings;
@@ -283,11 +160,10 @@ export const useCanvas = (tool: Tool, settings: CanvasSettings) => {
     if (!canvas || !ctx) return;
     
     const pos = getMousePos(e, canvas);
-    const currentPoint: Point = { x: pos.x, y: pos.y, time: Date.now() };
     
     switch (tool) {
       case 'brush':
-        drawBrush(ctx, currentPoint);
+        drawBrush(ctx, pos.x, pos.y);
         break;
       case 'eraser':
         drawEraser(ctx, pos.x, pos.y);
@@ -322,7 +198,6 @@ export const useCanvas = (tool: Tool, settings: CanvasSettings) => {
 
   const handleMouseUp = useCallback(() => {
     setIsDrawing(false);
-    pathPointsRef.current = []; // Clear path on mouse up
   }, []);
 
   const clearCanvas = useCallback(() => {

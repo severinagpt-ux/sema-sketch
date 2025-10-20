@@ -10,6 +10,11 @@ interface ToolSettings {
   pressureSensitivity: boolean;
   smoothing: boolean;
   autoErase: boolean;
+  smoothingStrength: number; // 0-100
+  pathElasticity: number; // 0-100
+  speedDynamics: boolean;
+  speedAffectsSize: boolean;
+  speedAffectsOpacity: boolean;
 }
 
 interface ToolContextType {
@@ -39,7 +44,12 @@ export const ToolProvider = ({ children }: { children: ReactNode }) => {
     color: '#000000',
     pressureSensitivity: false,
     smoothing: true,
-    autoErase: false
+    autoErase: false,
+    smoothingStrength: 50,
+    pathElasticity: 30,
+    speedDynamics: true,
+    speedAffectsSize: true,
+    speedAffectsOpacity: false
   });
 
   const updateSettings = (updates: Partial<ToolSettings>) => {

@@ -72,12 +72,65 @@ export const InspectorPanel = () => {
           />
         </div>
 
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <label className="text-xs text-muted-foreground">Smoothing Strength</label>
+            <span className="text-xs font-medium">{settings.smoothingStrength}%</span>
+          </div>
+          <input 
+            type="range" 
+            min="0" 
+            max="100" 
+            step="5"
+            value={settings.smoothingStrength}
+            onChange={(e) => updateSettings({ smoothingStrength: parseInt(e.target.value) })}
+            className="w-full accent-primary"
+          />
+        </div>
+        
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <label className="text-xs text-muted-foreground">Path Elasticity</label>
+            <span className="text-xs font-medium">{settings.pathElasticity}%</span>
+          </div>
+          <input 
+            type="range" 
+            min="0" 
+            max="100" 
+            step="5"
+            value={settings.pathElasticity}
+            onChange={(e) => updateSettings({ pathElasticity: parseInt(e.target.value) })}
+            className="w-full accent-primary"
+          />
+        </div>
+
         <div className="pt-2 border-t border-panel-border space-y-2">
           <div className="flex items-center justify-between">
             <label className="text-xs text-muted-foreground">Smoothing</label>
             <Switch 
               checked={settings.smoothing} 
               onCheckedChange={(checked) => updateSettings({ smoothing: checked })}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="text-xs text-muted-foreground">Speed Dynamics</label>
+            <Switch 
+              checked={settings.speedDynamics} 
+              onCheckedChange={(checked) => updateSettings({ speedDynamics: checked })}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="text-xs text-muted-foreground">Speed → Size</label>
+            <Switch 
+              checked={settings.speedAffectsSize} 
+              onCheckedChange={(checked) => updateSettings({ speedAffectsSize: checked })}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="text-xs text-muted-foreground">Speed → Opacity</label>
+            <Switch 
+              checked={settings.speedAffectsOpacity} 
+              onCheckedChange={(checked) => updateSettings({ speedAffectsOpacity: checked })}
             />
           </div>
           <div className="flex items-center justify-between">

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import VideoEditor from "./pages/VideoEditor";
 import AudioEditor from "./pages/AudioEditor";
+import Storyboard from "./pages/Storyboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/video-editor" element={<VideoEditor />} />
           <Route path="/audio-editor" element={<AudioEditor />} />
+          <Route path="/storyboard" element={<Storyboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

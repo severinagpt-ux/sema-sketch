@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { TopBar } from '@/components/TopBar';
 import { BottomBar } from '@/components/BottomBar';
+import { RightPanels } from '@/components/RightPanels';
 import { Tool, Layer } from '@/lib/types';
 import { ToolProvider } from '@/contexts/ToolContext';
 import { Button } from '@/components/ui/button';
@@ -179,35 +180,9 @@ const VideoEditor = () => {
           </div>
 
           {/* Right Panels */}
-          <div className="w-64 bg-panel-bg border-l border-panel-border overflow-auto">
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold">Properties</h3>
-                <Button variant="ghost" size="icon" className="h-6 w-6">
-                  <Settings className="w-3 h-3" />
-                </Button>
-              </div>
-              
-              <div className="space-y-4 text-xs">
-                <div>
-                  <div className="text-muted-foreground mb-1">Duration</div>
-                  <div className="font-mono">0:00 - 1:00</div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground mb-1">Resolution</div>
-                  <div>1920 x 1080</div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground mb-1">Frame Rate</div>
-                  <div>30 fps</div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground mb-1">Codec</div>
-                  <div>H.264</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <RightPanels 
+            onLayerVisibilityToggle={() => {}}
+          />
         </div>
         
         <BottomBar 

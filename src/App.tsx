@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import VideoEditor from "./pages/VideoEditor";
 import AudioEditor from "./pages/AudioEditor";
 import Storyboard from "./pages/Storyboard";
+import Characters from "./pages/Characters";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/video-editor" element={<VideoEditor />} />
           <Route path="/audio-editor" element={<AudioEditor />} />
           <Route path="/storyboard" element={<Storyboard />} />
+          <Route path="/characters" element={<Characters />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

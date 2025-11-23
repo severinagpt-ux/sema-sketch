@@ -1,19 +1,20 @@
 import { useState } from 'react';
 import { TopBar } from '@/components/TopBar';
-import { BottomBar } from '@/components/BottomBar';
+import { BottomToolbar } from '@/components/BottomToolbar';
 import { RightPanels } from '@/components/RightPanels';
+import { ToolProvider } from '@/contexts/ToolContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   User, UserPlus, Search, Grid3x3, List, 
   Brain, Heart, Palette, Camera, Mic, 
-  Users, Sparkles, FileText, Image as ImageIcon,
-  Eye, Smile, Angry, Frown, Meh, Zap
+  Sparkles, FileText, Image as ImageIcon,
+  Eye, Smile, Angry, Frown, Meh, Zap, Wand2
 } from 'lucide-react';
 import { Tool } from '@/lib/types';
 
@@ -93,9 +94,12 @@ export default function Characters() {
     char.role.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const characters = sampleCharacters;
+
   return (
-    <div className="h-screen w-screen flex flex-col bg-canvas overflow-hidden">
-      <TopBar projectName="Character Casting Studio" />
+    <ToolProvider>
+      <div className="h-screen w-full flex flex-col bg-background overflow-hidden">
+        <TopBar />
 
       <div className="flex-1 flex overflow-hidden">
         {/* Left Toolbar */}
@@ -112,10 +116,10 @@ export default function Characters() {
               <Icon className="w-5 h-5" />
             </Button>
           ))}
-        </div>
+          </div>
 
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col bg-canvas overflow-hidden">
           {/* Character Browser Header */}
           <div className="h-14 bg-panel border-b border-panel-border px-4 flex items-center gap-3">
             <div className="flex-1 flex items-center gap-2">
@@ -417,16 +421,36 @@ export default function Characters() {
           </div>
         </div>
 
-        {/* Right Panels */}
-        <RightPanels onLayerVisibilityToggle={() => {}} />
+          {/* Right Panels */}
+          <RightPanels onLayerVisibilityToggle={() => {}} />
+        </div>
+        
+        <BottomToolbar>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant={viewMode === 'grid' ? 'default' : 'ghost'} 
+              size="sm" 
+              className="h-8"
+              onClick={() => setViewMode('grid')}
+            >
+              <Grid3x3 className="w-4 h-4 mr-1" />
+              Grid
+            </Button>
+            <Button 
+              variant={viewMode === 'list' ? 'default' : 'ghost'} 
+              size="sm" 
+              className="h-8"
+              onClick={() => setViewMode('list')}
+            >
+              <List className="w-4 h-4 mr-1" />
+              List
+            </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{characters.length} Characters</span>
+          </div>
+        </BottomToolbar>
       </div>
-
-      <BottomBar
-        activeTool={activeTool}
-        zoom={100}
-        cursorX={0}
-        cursorY={0}
-      />
-    </div>
+    </ToolProvider>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TopBar } from '@/components/TopBar';
-import { BottomBar } from '@/components/BottomBar';
+import { BottomToolbar } from '@/components/BottomToolbar';
 import { RightPanels } from '@/components/RightPanels';
 import { Tool, Layer } from '@/lib/types';
 import { ToolProvider } from '@/contexts/ToolContext';
@@ -178,10 +178,35 @@ const VideoEditor = () => {
           />
         </div>
         
-        <BottomBar 
-          activeTool={activeTool}
-          zoom={currentZoom}
-        />
+        <BottomToolbar>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={() => setCurrentTime(0)}>
+              <SkipBack className="w-4 h-4" />
+            </Button>
+            <Button 
+              variant="default" 
+              size="icon"
+              onClick={() => setIsPlaying(!isPlaying)}
+            >
+              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            </Button>
+            <Button variant="ghost" size="icon" onClick={() => setCurrentTime(duration)}>
+              <SkipForward className="w-4 h-4" />
+            </Button>
+            <div className="text-xs font-mono text-muted-foreground ml-4">
+              {Math.floor(currentTime / 60)}:{(currentTime % 60).toString().padStart(2, '0')} / {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon">
+              <ZoomOut className="w-4 h-4" />
+            </Button>
+            <div className="text-xs text-muted-foreground">100%</div>
+            <Button variant="ghost" size="icon">
+              <ZoomIn className="w-4 h-4" />
+            </Button>
+          </div>
+        </BottomToolbar>
       </div>
     </ToolProvider>
   );

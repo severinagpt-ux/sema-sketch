@@ -1,13 +1,17 @@
 import { useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Download, Image, Layers, Film, Sparkles } from 'lucide-react';
+import { TopBar } from '@/components/TopBar';
+import { BottomToolbar } from '@/components/BottomToolbar';
+import { RightPanels } from '@/components/RightPanels';
+import { Play, Pause, SkipBack, SkipForward, Download, Image, Layers, Film, Sparkles, ZoomIn, ZoomOut, Scissors, Copy, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
-import { VideoShot, TimelineProject } from '@/lib/types';
+import { VideoShot, TimelineProject, Tool, Layer } from '@/lib/types';
 import { VideoGenerationPanel } from '@/components/panels/VideoGenerationPanel';
 import { FrameExtractionPanel } from '@/components/panels/FrameExtractionPanel';
 import { MotionAnalysisPanel } from '@/components/panels/MotionAnalysisPanel';
+import { ToolProvider } from '@/contexts/ToolContext';
 
-export const Timeline = () => {
+const Timeline = () => {
+  const [activeTool, setActiveTool] = useState<Tool>('select');
   const [project] = useState<TimelineProject>({
     id: '1',
     name: 'Video Project 1',
@@ -19,8 +23,38 @@ export const Timeline = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const [activePanel, setActivePanel] = useState<'generate' | 'extract' | 'motion' | null>('generate');
 
+  const timelineTools = [
+    { icon: Scissors, label: 'Cut' },
+    { icon: Copy, label: 'Split' },
+    { icon: Layers, label: 'Layers' },
+    { icon: Film, label: 'Clips' },
+    { icon: Wand2, label: 'Effects' },
+    { icon: Sparkles, label: 'AI Tools' },
+  ];
+
   return (
-    <div className="flex-1 flex flex-col bg-canvas overflow-hidden">
+    <ToolProvider>
+      <div className="h-screen w-full flex flex-col overflow-hidden bg-background">
+        <TopBar />
+        
+        <div className="flex-1 flex overflow-hidden">
+          {/* Left Toolbar */}
+          <div className="w-14 bg-toolbar border-r border-panel-border flex flex-col items-center py-2 gap-1">
+            {timelineTools.map(({ icon: Icon, label }) => (
+              <Button
+                key={label}
+                variant="ghost"
+                size="icon"
+                className="tool-button"
+                title={label}
+              >
+                <Icon className="w-5 h-5" />
+              </Button>
+            ))}
+          </div>
+
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col bg-canvas overflow-hidden">
       {/* Video Preview Area */}
       <div className="flex-1 flex items-center justify-center bg-background/50 relative">
         {selectedShot ? (
@@ -143,14 +177,46 @@ export const Timeline = () => {
         </div>
       </div>
 
-      {/* Side Panel */}
-      {activePanel && (
-        <div className="absolute right-0 top-0 bottom-48 w-96 bg-panel-bg border-l border-panel-border shadow-panel panel-slide overflow-y-auto">
-          {activePanel === 'generate' && <VideoGenerationPanel />}
-          {activePanel === 'extract' && selectedShot && <FrameExtractionPanel shot={selectedShot} />}
-          {activePanel === 'motion' && selectedShot && <MotionAnalysisPanel shot={selectedShot} />}
+          </div>
+
+          {/* Right Panels */}
+          <RightPanels 
+            onLayerVisibilityToggle={() => {}}
+          />
         </div>
-      )}
-    </div>
+        
+        <BottomToolbar>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={() => setCurrentTime(0)}>
+              <SkipBack className="w-4 h-4" />
+            </Button>
+            <Button 
+              variant="default" 
+              size="icon"
+              onClick={() => setIsPlaying(!isPlaying)}
+            >
+              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            </Button>
+            <Button variant="ghost" size="icon">
+              <SkipForward className="w-4 h-4" />
+            </Button>
+            <div className="text-xs font-mono text-muted-foreground ml-4">
+              {Math.floor(currentTime / 60)}:{(currentTime % 60).toFixed(0).padStart(2, '0')}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon">
+              <ZoomOut className="w-4 h-4" />
+            </Button>
+            <div className="text-xs text-muted-foreground">100%</div>
+            <Button variant="ghost" size="icon">
+              <ZoomIn className="w-4 h-4" />
+            </Button>
+          </div>
+        </BottomToolbar>
+      </div>
+    </ToolProvider>
   );
 };
+
+export default Timeline;

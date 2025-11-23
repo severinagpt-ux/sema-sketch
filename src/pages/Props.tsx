@@ -1,19 +1,20 @@
 import { useState } from 'react';
 import { TopBar } from '@/components/TopBar';
-import { BottomBar } from '@/components/BottomBar';
+import { BottomToolbar } from '@/components/BottomToolbar';
 import { RightPanels } from '@/components/RightPanels';
+import { ToolProvider } from '@/contexts/ToolContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Box, Grid3x3, List, Search, Plus, 
   Package, Building2, Palette, Camera, 
   Sparkles, Wand2, Image as ImageIcon, Layers,
   Lightbulb, Eye, Upload, Download,
-  ShoppingCart, Award, Tag, Filter
+  Award, Tag, Filter
 } from 'lucide-react';
 import { Tool } from '@/lib/types';
 
@@ -138,9 +139,12 @@ export default function Props() {
     return matchesSearch && matchesType && matchesCategory;
   });
 
+  const assets = sampleAssets;
+
   return (
-    <div className="h-screen w-screen flex flex-col bg-canvas overflow-hidden">
-      <TopBar projectName="Props & Scenes Studio" />
+    <ToolProvider>
+      <div className="h-screen w-full flex flex-col bg-background overflow-hidden">
+        <TopBar />
 
       <div className="flex-1 flex overflow-hidden">
         {/* Left Toolbar */}
@@ -157,10 +161,10 @@ export default function Props() {
               <Icon className="w-5 h-5" />
             </Button>
           ))}
-        </div>
+          </div>
 
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col bg-canvas overflow-hidden">
           {/* Asset Browser Header */}
           <div className="bg-panel border-b border-panel-border">
             <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'prop' | 'scene')} className="w-full">
@@ -471,7 +475,7 @@ export default function Props() {
                     </div>
                     <div className="pt-4 border-t space-y-2">
                       <Button className="w-full" variant="default">
-                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        <Download className="w-4 h-4 mr-2" />
                         {selectedAsset.price === 'Free' ? 'Download Free' : 'Purchase Asset'}
                       </Button>
                       <Button className="w-full" variant="outline">
@@ -486,16 +490,38 @@ export default function Props() {
           </div>
         </div>
 
-        {/* Right Panels */}
-        <RightPanels onLayerVisibilityToggle={() => {}} />
+          {/* Right Panels */}
+          <RightPanels onLayerVisibilityToggle={() => {}} />
+        </div>
+        
+        <BottomToolbar>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant={viewMode === 'grid' ? 'default' : 'ghost'} 
+              size="sm" 
+              className="h-8"
+              onClick={() => setViewMode('grid')}
+            >
+              <Grid3x3 className="w-4 h-4 mr-1" />
+              Grid
+            </Button>
+            <Button 
+              variant={viewMode === 'list' ? 'default' : 'ghost'} 
+              size="sm" 
+              className="h-8"
+              onClick={() => setViewMode('list')}
+            >
+              <List className="w-4 h-4 mr-1" />
+              List
+            </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">
+              {assets.filter(a => a.type === activeTab).length} {activeTab === 'prop' ? 'Props' : 'Scenes'}
+            </span>
+          </div>
+        </BottomToolbar>
       </div>
-
-      <BottomBar
-        activeTool={activeTool}
-        zoom={100}
-        cursorX={0}
-        cursorY={0}
-      />
-    </div>
+    </ToolProvider>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TopBar } from '@/components/TopBar';
-import { BottomBar } from '@/components/BottomBar';
+import { BottomToolbar } from '@/components/BottomToolbar';
 import { RightPanels } from '@/components/RightPanels';
 import { Tool } from '@/lib/types';
 import { ToolProvider } from '@/contexts/ToolContext';
@@ -9,31 +9,14 @@ import {
   Play, Pause, SkipBack, SkipForward, Scissors, 
   Volume2, Music, Mic, Wand2, Sliders, Waves,
   Download, Upload, ZoomIn, ZoomOut, Maximize2,
-  Square, Circle, Type, Sparkles, Copy, Trash2
+  Square, Circle, Sparkles, Copy, Trash2
 } from 'lucide-react';
 
 const AudioEditor = () => {
   const [activeTool, setActiveTool] = useState<Tool>('select');
-  const [magnifier1, setMagnifier1] = useState(100);
-  const [magnifier2, setMagnifier2] = useState(200);
-  const [activeMagnifier, setActiveMagnifier] = useState<1 | 2>(1);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(180);
-
-  const currentZoom = activeMagnifier === 1 ? magnifier1 : magnifier2;
-
-  const handleMagnifierChange = (preset: 1 | 2, value: number) => {
-    if (preset === 1) {
-      setMagnifier1(value);
-    } else {
-      setMagnifier2(value);
-    }
-  };
-
-  const handleMagnifierToggle = (preset: 1 | 2) => {
-    setActiveMagnifier(preset);
-  };
 
   const audioTools = [
     { icon: Scissors, label: 'Cut', active: false },
@@ -51,7 +34,7 @@ const AudioEditor = () => {
   return (
     <ToolProvider>
       <div className="h-screen w-full flex flex-col overflow-hidden bg-background">
-        <TopBar projectName="Audio Project" />
+        <TopBar />
         
         <div className="flex-1 flex overflow-hidden">
           {/* Left Toolbar */}
@@ -95,7 +78,7 @@ const AudioEditor = () => {
                     <ZoomOut className="w-4 h-4" />
                   </Button>
                   <div className="text-xs text-muted-foreground min-w-[3rem] text-center">
-                    {currentZoom}%
+                    100%
                   </div>
                   <Button variant="ghost" size="icon">
                     <ZoomIn className="w-4 h-4" />
@@ -300,10 +283,35 @@ const AudioEditor = () => {
           />
         </div>
         
-        <BottomBar 
-          activeTool={activeTool}
-          zoom={currentZoom}
-        />
+        <BottomToolbar>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={() => setCurrentTime(0)}>
+              <SkipBack className="w-4 h-4" />
+            </Button>
+            <Button 
+              variant="default" 
+              size="icon"
+              onClick={() => setIsPlaying(!isPlaying)}
+            >
+              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            </Button>
+            <Button variant="ghost" size="icon" onClick={() => setCurrentTime(duration)}>
+              <SkipForward className="w-4 h-4" />
+            </Button>
+            <div className="text-xs font-mono text-muted-foreground ml-4">
+              {Math.floor(currentTime / 60)}:{(currentTime % 60).toString().padStart(2, '0')} / {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon">
+              <ZoomOut className="w-4 h-4" />
+            </Button>
+            <div className="text-xs text-muted-foreground">100%</div>
+            <Button variant="ghost" size="icon">
+              <ZoomIn className="w-4 h-4" />
+            </Button>
+          </div>
+        </BottomToolbar>
       </div>
     </ToolProvider>
   );

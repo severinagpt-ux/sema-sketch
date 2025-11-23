@@ -140,14 +140,7 @@ export default function Props() {
 
   return (
     <div className="h-screen w-screen flex flex-col bg-canvas overflow-hidden">
-      <TopBar
-        projectName="Props & Scenes Studio"
-        magnifier1={1}
-        magnifier2={1}
-        activeMagnifier={1}
-        onMagnifierChange={() => {}}
-        onMagnifierToggle={() => {}}
-      />
+      <TopBar projectName="Props & Scenes Studio" />
 
       <div className="flex-1 flex overflow-hidden">
         {/* Left Toolbar */}

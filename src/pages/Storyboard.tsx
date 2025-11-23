@@ -56,19 +56,7 @@ const Storyboard = () => {
   return (
     <div className="h-screen flex flex-col bg-background">
       {/* Top Bar */}
-      <TopBar
-        projectName="Storyboard Creator"
-        magnifier1={magnifier1}
-        magnifier2={magnifier2}
-        activeMagnifier={activeMagnifier}
-        onMagnifierChange={(preset, value) => {
-          if (preset === 1) setMagnifier1(value);
-          else setMagnifier2(value);
-        }}
-        onMagnifierToggle={(preset) => setActiveMagnifier(preset)}
-        currentView={currentView}
-        onViewChange={setCurrentView}
-      />
+      <TopBar projectName="Storyboard Creator" />
 
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">

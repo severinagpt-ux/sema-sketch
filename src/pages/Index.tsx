@@ -69,16 +69,7 @@ const Index = () => {
   return (
     <ToolProvider>
       <div className="h-screen w-full flex flex-col overflow-hidden">
-      <TopBar 
-        projectName="Untitled Project"
-        magnifier1={magnifier1}
-        magnifier2={magnifier2}
-        activeMagnifier={activeMagnifier}
-        onMagnifierChange={handleMagnifierChange}
-        onMagnifierToggle={handleMagnifierToggle}
-        currentView={currentView}
-        onViewChange={setCurrentView}
-      />
+      <TopBar projectName="Untitled Project" />
       
       <div className="flex-1 flex overflow-hidden">
         {currentView === 'canvas' ? (

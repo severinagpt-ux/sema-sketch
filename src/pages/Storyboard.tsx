@@ -1,29 +1,20 @@
 import { useState } from 'react';
 import { TopBar } from '@/components/TopBar';
-import { BottomBar } from '@/components/BottomBar';
+import { BottomToolbar } from '@/components/BottomToolbar';
 import { RightPanels } from '@/components/RightPanels';
-import { Tool, AppView } from '@/lib/types';
-import { 
-  Film, Grid3x3, Layout, Image, Type, Wand2, 
-  Camera, Play, Square, SkipBack, SkipForward,
-  Maximize2, Clock, User, MapPin
-} from 'lucide-react';
+import { Tool } from '@/lib/types';
+import { ToolProvider } from '@/contexts/ToolContext';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { 
+  Plus, FileText, Image, Camera, Film, Layout, 
+  Wand2, Sparkles, Clock, MessageSquare, ZoomIn, ZoomOut, Grid3x3
+} from 'lucide-react';
 
 const Storyboard = () => {
   const [activeTool, setActiveTool] = useState<Tool>('select');
-  const [zoom, setZoom] = useState(100);
-  const [cursorX, setCursorX] = useState(0);
-  const [cursorY, setCursorY] = useState(0);
-  const [magnifier1, setMagnifier1] = useState(100);
-  const [magnifier2, setMagnifier2] = useState(100);
-  const [activeMagnifier, setActiveMagnifier] = useState<1 | 2>(1);
-  const [currentView, setCurrentView] = useState<AppView>('canvas');
   const [selectedPanel, setSelectedPanel] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   const handleToolChange = (tool: Tool) => {
     setActiveTool(tool);
@@ -38,9 +29,11 @@ const Storyboard = () => {
     { icon: Grid3x3, tool: 'select', label: 'Select Panel' },
     { icon: Layout, tool: 'crop', label: 'Frame Tool' },
     { icon: Image, tool: 'brush', label: 'Sketch Tool' },
-    { icon: Type, tool: 'text', label: 'Add Notes' },
+    { icon: FileText, tool: 'text', label: 'Add Notes' },
     { icon: Wand2, tool: 'ai-tools', label: 'AI Generate' },
     { icon: Camera, tool: 'magnifier', label: 'Camera View' },
+    { icon: Film, tool: 'shapes', label: 'Sequence' },
+    { icon: Sparkles, tool: 'magic-wand', label: 'AI Enhance' },
   ];
 
   // Sample storyboard panels
@@ -53,13 +46,14 @@ const Storyboard = () => {
     { id: 6, scene: 'Scene 2', shot: 'Shot 2C', duration: '3s', notes: 'Cutaway detail' },
   ];
 
-  return (
-    <div className="h-screen flex flex-col bg-background">
-      {/* Top Bar */}
-      <TopBar projectName="Storyboard Creator" />
+  const scenes = storyboardPanels;
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex overflow-hidden">
+  return (
+    <ToolProvider>
+      <div className="h-screen w-full flex flex-col bg-background overflow-hidden">
+        <TopBar />
+
+        <div className="flex-1 flex overflow-hidden">
         {/* Left Toolbar */}
         <div className="w-14 bg-toolbar border-r border-panel-border flex flex-col items-center py-2 gap-1">
           {storyboardTools.map(({ icon: Icon, tool, label }) => (
@@ -74,12 +68,10 @@ const Storyboard = () => {
               <Icon className="w-5 h-5" />
             </Button>
           ))}
-        </div>
+          </div>
 
-        {/* Center: Storyboard Canvas */}
-        <div className="flex-1 flex flex-col bg-canvas overflow-hidden">
-          {/* Storyboard Grid Area */}
-          <div className="flex-1 p-6 overflow-auto">
+          {/* Center: Storyboard Canvas */}
+          <div className="flex-1 bg-canvas overflow-auto p-6">
             <div className="max-w-7xl mx-auto">
               {/* Grid Header */}
               <div className="mb-6 flex items-center justify-between">
@@ -138,7 +130,7 @@ const Storyboard = () => {
                       {/* Panel Actions */}
                       <div className="flex gap-1 pt-2">
                         <Button variant="ghost" size="sm" className="h-7 text-xs flex-1">
-                          <Type className="w-3 h-3 mr-1" />
+                          <FileText className="w-3 h-3 mr-1" />
                           Edit
                         </Button>
                         <Button variant="ghost" size="sm" className="h-7 text-xs flex-1">
@@ -153,126 +145,36 @@ const Storyboard = () => {
             </div>
           </div>
 
-          {/* Script Timeline Section */}
-          <div className="h-64 bg-toolbar border-t border-panel-border flex flex-col">
-            {/* Timeline Controls */}
-            <div className="h-10 bg-toolbar border-b border-panel-border flex items-center justify-between px-4">
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-7 w-7"
-                  onClick={() => setIsPlaying(!isPlaying)}
-                >
-                  {isPlaying ? <Square className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7">
-                  <SkipBack className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7">
-                  <SkipForward className="w-4 h-4" />
-                </Button>
-                <div className="w-px h-4 bg-panel-border mx-2" />
-                <span className="text-xs text-muted-foreground font-mono">00:00:00</span>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">Zoom:</span>
-                  <Slider
-                    value={[zoom]}
-                    onValueChange={(value) => setZoom(value[0])}
-                    min={50}
-                    max={200}
-                    step={10}
-                    className="w-24"
-                  />
-                  <span className="text-xs text-muted-foreground w-12">{zoom}%</span>
-                </div>
-                <Button variant="ghost" size="icon" className="h-7 w-7">
-                  <Maximize2 className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-
-            {/* Timeline Tracks */}
-            <div className="flex-1 overflow-auto">
-              <div className="flex h-full">
-                {/* Track Labels */}
-                <div className="w-32 bg-toolbar border-r border-panel-border flex-shrink-0">
-                  <div className="h-12 border-b border-panel-border flex items-center px-3">
-                    <div className="flex items-center gap-2">
-                      <Film className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-xs font-medium">Panels</span>
-                    </div>
-                  </div>
-                  <div className="h-12 border-b border-panel-border flex items-center px-3">
-                    <div className="flex items-center gap-2">
-                      <User className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-xs font-medium">Characters</span>
-                    </div>
-                  </div>
-                  <div className="h-12 border-b border-panel-border flex items-center px-3">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-xs font-medium">Location</span>
-                    </div>
-                  </div>
-                  <div className="h-12 border-b border-panel-border flex items-center px-3">
-                    <div className="flex items-center gap-2">
-                      <Type className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-xs font-medium">Dialogue</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Timeline Content */}
-                <div className="flex-1 relative bg-canvas/50">
-                  {/* Time ruler */}
-                  <div className="h-6 border-b border-panel-border flex items-center bg-toolbar text-xs text-muted-foreground">
-                    {Array.from({ length: 20 }).map((_, i) => (
-                      <div key={i} className="flex-1 border-l border-panel-border px-2">
-                        {i}s
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Panel track visualization */}
-                  <div className="h-12 border-b border-panel-border flex items-center px-2 gap-1">
-                    {storyboardPanels.map((panel, i) => (
-                      <div
-                        key={panel.id}
-                        className="h-8 bg-primary/20 border border-primary/40 rounded px-2 flex items-center justify-center hover:bg-primary/30 cursor-pointer transition-colors"
-                        style={{ width: `${parseInt(panel.duration) * 40}px` }}
-                      >
-                        <span className="text-xs font-medium text-primary">P{panel.id}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Additional tracks */}
-                  <div className="h-12 border-b border-panel-border" />
-                  <div className="h-12 border-b border-panel-border" />
-                  <div className="h-12 border-b border-panel-border" />
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Right Panels */}
+          <RightPanels onLayerVisibilityToggle={handleLayerVisibilityToggle} />
         </div>
-
-        {/* Right Panels */}
-        <RightPanels onLayerVisibilityToggle={handleLayerVisibilityToggle} />
+        
+        <BottomToolbar>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="h-8">
+              <ZoomOut className="w-4 h-4 mr-1" />
+              Zoom Out
+            </Button>
+            <span className="text-xs text-muted-foreground">100%</span>
+            <Button variant="ghost" size="sm" className="h-8">
+              <ZoomIn className="w-4 h-4 mr-1" />
+              Zoom In
+            </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="h-8">
+              <Grid3x3 className="w-4 h-4 mr-1" />
+              Grid View
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8">
+              <Plus className="w-4 h-4 mr-1" />
+              Add Panel
+            </Button>
+            <span className="text-xs text-muted-foreground">{scenes.length} Scenes</span>
+          </div>
+        </BottomToolbar>
       </div>
-
-      {/* Bottom Bar */}
-      <BottomBar
-        activeTool={activeTool}
-        zoom={zoom}
-        cursorX={cursorX}
-        cursorY={cursorY}
-        currentView={currentView}
-      />
-    </div>
+    </ToolProvider>
   );
 };
 

@@ -4,29 +4,33 @@ import { Button } from './ui/button';
 import { Panel } from '@/lib/types';
 import { LayersPanel } from './panels/LayersPanel';
 import { InspectorPanel } from './panels/InspectorPanel';
-import { ColorSpherePanel } from './panels/ColorSpherePanel';
 import { ColorPickerPanel } from './panels/ColorPickerPanel';
 import { FeatherEdgesPanel } from './panels/FeatherEdgesPanel';
-
-interface RightPanelsProps {
-  onLayerVisibilityToggle: (layerId: string) => void;
-}
-
 import { AssetBrowserPanel } from './panels/AssetBrowserPanel';
 import { CursorZoomPanel } from './panels/CursorZoomPanel';
 import { MicroscopePanel } from './panels/MicroscopePanel';
 import { AIToolsPanel } from './panels/AIToolsPanel';
 import { AIImageGenPanel } from './panels/AIImageGenPanel';
-import { Package, ZoomIn, Microscope, Sparkles, ImagePlus } from 'lucide-react';
+import { Package, ZoomIn, Microscope, Sparkles, ImagePlus, MessageSquare, Settings as SettingsIcon } from 'lucide-react';
 import { PanelSize } from '@/lib/types';
 
-const panelConfigs: { icon: typeof Layers; panel: Panel; label: string }[] = [
+interface RightPanelsProps {
+  onLayerVisibilityToggle: (layerId: string) => void;
+}
+
+// Universal panels available on all pages
+const universalPanels: { icon: typeof Layers; panel: Panel; label: string; universal: true }[] = [
+  { icon: MessageSquare, panel: 'ai-tools', label: 'AI Assistant', universal: true },
+  { icon: Package, panel: 'assets', label: 'Assets', universal: true },
+  { icon: SettingsIcon, panel: 'settings', label: 'Settings', universal: true },
+];
+
+// Page-specific panels
+const pagePanels: { icon: typeof Layers; panel: Panel; label: string }[] = [
   { icon: Layers, panel: 'layers', label: 'Layers' },
   { icon: Info, panel: 'inspector', label: 'Inspector' },
   { icon: Palette, panel: 'color', label: 'Color Picker' },
   { icon: Wand, panel: 'effects', label: 'Effects' },
-  { icon: Package, panel: 'assets', label: 'Assets' },
-  { icon: Sparkles, panel: 'ai-tools', label: 'AI Tools' },
   { icon: ImagePlus, panel: 'ai-image-gen', label: 'AI Image Gen' },
   { icon: ZoomIn, panel: 'cursor-zoom', label: 'Cursor Zoom' },
   { icon: Microscope, panel: 'microscope', label: 'Microscope' },
@@ -65,10 +69,19 @@ export const RightPanels = ({ onLayerVisibilityToggle }: RightPanelsProps) => {
         return <CursorZoomPanel size={panelSize === 'full' ? 'full' : 'half'} />;
       case 'microscope':
         return <MicroscopePanel size={panelSize === 'full' ? 'full' : 'half'} />;
+      case 'settings':
+        return (
+          <div className="p-4">
+            <h3 className="font-semibold mb-2">Project Settings</h3>
+            <p className="text-sm text-muted-foreground">Project configuration and preferences</p>
+          </div>
+        );
       default:
         return null;
     }
   };
+
+  const allPanels = [...universalPanels, ...pagePanels];
 
   return (
     <div className="flex h-full">
@@ -101,7 +114,25 @@ export const RightPanels = ({ onLayerVisibilityToggle }: RightPanelsProps) => {
       
       {/* Panel Button Bar */}
       <div className="w-12 bg-toolbar border-l border-panel-border flex flex-col items-center py-2 gap-1">
-        {panelConfigs.map(({ icon: Icon, panel, label }) => (
+        {/* Universal Panels */}
+        {universalPanels.map(({ icon: Icon, panel, label }) => (
+          <div key={panel} className="relative group">
+            <Button
+              variant={activePanel === panel ? "default" : "ghost"}
+              size="icon"
+              className="panel-icon-button"
+              title={label}
+              onClick={() => handlePanelClick(panel, 'full')}
+            >
+              <Icon className="w-5 h-5" />
+            </Button>
+          </div>
+        ))}
+        
+        <div className="h-px w-8 bg-border my-1" />
+        
+        {/* Page-Specific Panels */}
+        {pagePanels.map(({ icon: Icon, panel, label }) => (
           <div key={panel} className="relative group">
             <div className="relative">
               {/* Main Button with Split Hover Zones */}

@@ -175,6 +175,7 @@ const VideoEditor = () => {
           {/* Right Panels */}
           <RightPanels 
             onLayerVisibilityToggle={() => {}}
+            currentPage="video"
           />
         </div>
         

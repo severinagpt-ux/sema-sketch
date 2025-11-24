@@ -68,6 +68,7 @@ const Index = () => {
             
             <RightPanels 
               onLayerVisibilityToggle={handleLayerVisibilityToggle}
+              currentPage="canvas"
             />
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Layers, Info, Wand, Palette, ChevronLeft } from 'lucide-react';
+import { Layers, Info, Wand, Palette, ChevronLeft, Package, ZoomIn, Microscope, ImagePlus, MessageSquare, Settings as SettingsIcon, Film, Users, Box, Video, Music, FileText, Palette as PaletteIcon, Lightbulb, ListChecks, Ruler, Camera, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
-import { Panel } from '@/lib/types';
+import { Panel, PageType, UniversalPanel, CanvasPanel, StoryboardPanel, CharactersPanel, PropsPanel, VideoPanel, AudioPanel } from '@/lib/types';
 import { LayersPanel } from './panels/LayersPanel';
 import { InspectorPanel } from './panels/InspectorPanel';
 import { ColorPickerPanel } from './panels/ColorPickerPanel';
@@ -9,24 +9,29 @@ import { FeatherEdgesPanel } from './panels/FeatherEdgesPanel';
 import { AssetBrowserPanel } from './panels/AssetBrowserPanel';
 import { CursorZoomPanel } from './panels/CursorZoomPanel';
 import { MicroscopePanel } from './panels/MicroscopePanel';
-import { AIToolsPanel } from './panels/AIToolsPanel';
 import { AIImageGenPanel } from './panels/AIImageGenPanel';
-import { Package, ZoomIn, Microscope, Sparkles, ImagePlus, MessageSquare, Settings as SettingsIcon } from 'lucide-react';
+import { AIAssistantPanel } from './panels/universal/AIAssistantPanel';
+import { AssetsBrowserPanel } from './panels/universal/AssetsBrowserPanel';
+import { ProjectSettingsPanel } from './panels/universal/ProjectSettingsPanel';
+import { VideoGenerationPanel } from './panels/VideoGenerationPanel';
+import { MotionAnalysisPanel } from './panels/MotionAnalysisPanel';
+import { FrameExtractionPanel } from './panels/FrameExtractionPanel';
 import { PanelSize } from '@/lib/types';
 
 interface RightPanelsProps {
   onLayerVisibilityToggle: (layerId: string) => void;
+  currentPage?: PageType;
 }
 
-// Universal panels available on all pages
-const universalPanels: { icon: typeof Layers; panel: Panel; label: string; universal: true }[] = [
-  { icon: MessageSquare, panel: 'ai-tools', label: 'AI Assistant', universal: true },
-  { icon: Package, panel: 'assets', label: 'Assets', universal: true },
-  { icon: SettingsIcon, panel: 'settings', label: 'Settings', universal: true },
+// Universal panels available on all pages (bottom section)
+const universalPanels: { icon: typeof MessageSquare; panel: UniversalPanel; label: string }[] = [
+  { icon: MessageSquare, panel: 'ai-assistant', label: 'AI Assistant' },
+  { icon: Package, panel: 'assets', label: 'Assets' },
+  { icon: SettingsIcon, panel: 'settings', label: 'Settings' },
 ];
 
-// Page-specific panels
-const pagePanels: { icon: typeof Layers; panel: Panel; label: string }[] = [
+// Page-specific panels (top section)
+const canvasPanels: { icon: typeof Layers; panel: CanvasPanel; label: string }[] = [
   { icon: Layers, panel: 'layers', label: 'Layers' },
   { icon: Info, panel: 'inspector', label: 'Inspector' },
   { icon: Palette, panel: 'color', label: 'Color Picker' },
@@ -36,7 +41,59 @@ const pagePanels: { icon: typeof Layers; panel: Panel; label: string }[] = [
   { icon: Microscope, panel: 'microscope', label: 'Microscope' },
 ];
 
-export const RightPanels = ({ onLayerVisibilityToggle }: RightPanelsProps) => {
+const storyboardPanels: { icon: any; panel: StoryboardPanel; label: string }[] = [
+  { icon: ListChecks, panel: 'shot-list', label: 'Shot List' },
+  { icon: FileText, panel: 'script', label: 'Script' },
+  { icon: Camera, panel: 'shot-details', label: 'Shot Details' },
+  { icon: PaletteIcon, panel: 'visual-style', label: 'Visual Style' },
+  { icon: Box, panel: 'scene-breakdown', label: 'Scene Breakdown' },
+  { icon: Lightbulb, panel: 'production-notes', label: 'Production Notes' },
+];
+
+const charactersPanels: { icon: any; panel: CharactersPanel; label: string }[] = [
+  { icon: Users, panel: 'character-dna', label: 'Character DNA' },
+  { icon: Info, panel: 'personality', label: 'Personality' },
+  { icon: FileText, panel: 'backstory', label: 'Backstory' },
+  { icon: Sparkles, panel: 'expressions', label: 'Expressions' },
+  { icon: Music, panel: 'voice-profile', label: 'Voice Profile' },
+  { icon: Palette, panel: 'outfits', label: 'Outfits' },
+  { icon: Camera, panel: 'multi-angle', label: 'Multi-Angle' },
+  { icon: ListChecks, panel: 'consistency', label: 'Consistency' },
+];
+
+const propsPanels: { icon: any; panel: PropsPanel; label: string }[] = [
+  { icon: Box, panel: 'props-library', label: 'Props Library' },
+  { icon: Film, panel: 'scene-library', label: 'Scene Library' },
+  { icon: Palette, panel: 'style-variations', label: 'Style Variations' },
+  { icon: Wand, panel: 'customization', label: 'Customization' },
+  { icon: Sparkles, panel: 'brand-integration', label: 'Brand Integration' },
+  { icon: Package, panel: 'marketplace', label: 'Marketplace' },
+  { icon: Camera, panel: 'multi-view', label: 'Multi-View' },
+];
+
+const videoPanels: { icon: any; panel: VideoPanel; label: string }[] = [
+  { icon: Film, panel: 'shot-manager', label: 'Shot Manager' },
+  { icon: Sparkles, panel: 'cinematic-styles', label: 'Cinematic Styles' },
+  { icon: Ruler, panel: 'timeline-controls', label: 'Timeline Controls' },
+  { icon: Palette, panel: 'color-grading', label: 'Color Grading' },
+  { icon: Wand, panel: 'effects-library', label: 'Effects Library' },
+  { icon: Music, panel: 'audio-sync', label: 'Audio Sync' },
+  { icon: Camera, panel: 'motion-analysis', label: 'Motion Analysis' },
+  { icon: ImagePlus, panel: 'frame-extraction', label: 'Frame Extraction' },
+];
+
+const audioPanels: { icon: any; panel: AudioPanel; label: string }[] = [
+  { icon: Music, panel: 'audio-forge', label: 'Audio Forge' },
+  { icon: MessageSquare, panel: 'voice-synthesis', label: 'Voice Synthesis' },
+  { icon: Sparkles, panel: 'music-generator', label: 'Music Generator' },
+  { icon: Wand, panel: 'sound-design', label: 'Sound Design' },
+  { icon: Palette, panel: 'audio-mixer', label: 'Audio Mixer' },
+  { icon: Camera, panel: 'spatial-audio', label: 'Spatial Audio' },
+  { icon: Info, panel: 'waveform', label: 'Waveform' },
+  { icon: Users, panel: 'character-voices', label: 'Character Voices' },
+];
+
+export const RightPanels = ({ onLayerVisibilityToggle, currentPage = 'canvas' }: RightPanelsProps) => {
   const [activePanel, setActivePanel] = useState<Panel | null>('layers');
   const [panelSize, setPanelSize] = useState<PanelSize>('full');
 
@@ -49,39 +106,57 @@ export const RightPanels = ({ onLayerVisibilityToggle }: RightPanelsProps) => {
     }
   };
 
-  const renderPanelContent = () => {
-    switch (activePanel) {
-      case 'layers':
-        return <LayersPanel onLayerVisibilityToggle={onLayerVisibilityToggle} />;
-      case 'inspector':
-        return <InspectorPanel />;
-      case 'color':
-        return <ColorPickerPanel />;
-      case 'effects':
-        return <FeatherEdgesPanel />;
-      case 'assets':
-        return <AssetBrowserPanel />;
-      case 'ai-tools':
-        return <AIToolsPanel />;
-      case 'ai-image-gen':
-        return <AIImageGenPanel />;
-      case 'cursor-zoom':
-        return <CursorZoomPanel size={panelSize === 'full' ? 'full' : 'half'} />;
-      case 'microscope':
-        return <MicroscopePanel size={panelSize === 'full' ? 'full' : 'half'} />;
-      case 'settings':
-        return (
-          <div className="p-4">
-            <h3 className="font-semibold mb-2">Project Settings</h3>
-            <p className="text-sm text-muted-foreground">Project configuration and preferences</p>
-          </div>
-        );
+  // Get page-specific panels based on current page
+  const getPagePanels = () => {
+    switch (currentPage) {
+      case 'canvas':
+        return canvasPanels;
+      case 'storyboard':
+        return storyboardPanels;
+      case 'characters':
+        return charactersPanels;
+      case 'props':
+        return propsPanels;
+      case 'video':
+        return videoPanels;
+      case 'audio':
+        return audioPanels;
       default:
-        return null;
+        return canvasPanels;
     }
   };
 
-  const allPanels = [...universalPanels, ...pagePanels];
+  const renderPanelContent = () => {
+    // Canvas panels
+    if (activePanel === 'layers') return <LayersPanel onLayerVisibilityToggle={onLayerVisibilityToggle} />;
+    if (activePanel === 'inspector') return <InspectorPanel />;
+    if (activePanel === 'color') return <ColorPickerPanel />;
+    if (activePanel === 'effects') return <FeatherEdgesPanel />;
+    if (activePanel === 'ai-image-gen') return <AIImageGenPanel />;
+    if (activePanel === 'cursor-zoom') return <CursorZoomPanel size={panelSize === 'full' ? 'full' : 'half'} />;
+    if (activePanel === 'microscope') return <MicroscopePanel size={panelSize === 'full' ? 'full' : 'half'} />;
+    
+    // Universal panels
+    if (activePanel === 'ai-assistant') return <AIAssistantPanel currentPage={currentPage} />;
+    if (activePanel === 'assets') return <AssetsBrowserPanel />;
+    if (activePanel === 'settings') return <ProjectSettingsPanel />;
+    
+    // Video panels
+    if (activePanel === 'motion-analysis') return <MotionAnalysisPanel shot={{ id: '1', name: 'Shot 1', frames: [], duration: 5, firstFrame: '', lastFrame: '', prompt: '', status: 'ready' }} />;
+    if (activePanel === 'frame-extraction') return <FrameExtractionPanel shot={{ id: '1', name: 'Shot 1', frames: [], duration: 5, firstFrame: '', lastFrame: '', prompt: '', status: 'ready' }} />;
+    
+    // Placeholder for other panels
+    return (
+      <div className="p-4">
+        <h3 className="font-semibold mb-2 capitalize">{activePanel}</h3>
+        <p className="text-sm text-muted-foreground">
+          {activePanel} panel coming soon...
+        </p>
+      </div>
+    );
+  };
+
+  const pagePanels = getPagePanels();
 
   return (
     <div className="flex h-full">
@@ -95,7 +170,7 @@ export const RightPanels = ({ onLayerVisibilityToggle }: RightPanelsProps) => {
         >
           <div className="h-full flex flex-col">
             <div className="flex items-center justify-between px-4 py-2 border-b border-panel-border">
-              <h2 className="text-sm font-semibold capitalize">{activePanel}</h2>
+              <h2 className="text-sm font-semibold capitalize">{activePanel.replace(/-/g, ' ')}</h2>
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -114,28 +189,10 @@ export const RightPanels = ({ onLayerVisibilityToggle }: RightPanelsProps) => {
       
       {/* Panel Button Bar */}
       <div className="w-12 bg-toolbar border-l border-panel-border flex flex-col items-center py-2 gap-1">
-        {/* Universal Panels */}
-        {universalPanels.map(({ icon: Icon, panel, label }) => (
-          <div key={panel} className="relative group">
-            <Button
-              variant={activePanel === panel ? "default" : "ghost"}
-              size="icon"
-              className="panel-icon-button"
-              title={label}
-              onClick={() => handlePanelClick(panel, 'full')}
-            >
-              <Icon className="w-5 h-5" />
-            </Button>
-          </div>
-        ))}
-        
-        <div className="h-px w-8 bg-border my-1" />
-        
-        {/* Page-Specific Panels */}
+        {/* Page-Specific Panels (Top Section) */}
         {pagePanels.map(({ icon: Icon, panel, label }) => (
           <div key={panel} className="relative group">
             <div className="relative">
-              {/* Main Button with Split Hover Zones */}
               <Button
                 variant={activePanel === panel ? "default" : "ghost"}
                 size="icon"
@@ -168,18 +225,31 @@ export const RightPanels = ({ onLayerVisibilityToggle }: RightPanelsProps) => {
                 </div>
               </Button>
               
-              {/* Hover Split Visual Indicator with Borders */}
+              {/* Hover Split Visual Indicator */}
               <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                {/* Full Panel Zone (Left half) */}
                 <div className="absolute top-0 bottom-0 left-0 w-1/2 border-2 border-primary/40 rounded-l" />
-                
-                {/* Top Panel Zone (Right top) */}
                 <div className="absolute top-0 right-0 w-1/2 h-1/2 border-2 border-primary/40 rounded-tr" />
-                
-                {/* Bottom Panel Zone (Right bottom) */}
                 <div className="absolute bottom-0 right-0 w-1/2 h-1/2 border-2 border-primary/40 rounded-br" />
               </div>
             </div>
+          </div>
+        ))}
+        
+        {/* Divider */}
+        <div className="h-px w-8 bg-border my-2" />
+        
+        {/* Universal Panels (Bottom Section) */}
+        {universalPanels.map(({ icon: Icon, panel, label }) => (
+          <div key={panel} className="relative group">
+            <Button
+              variant={activePanel === panel ? "default" : "ghost"}
+              size="icon"
+              className="panel-icon-button"
+              title={label}
+              onClick={() => handlePanelClick(panel, 'full')}
+            >
+              <Icon className="w-5 h-5" />
+            </Button>
           </div>
         ))}
       </div>

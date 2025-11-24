@@ -280,6 +280,7 @@ const AudioEditor = () => {
           {/* Right Panels */}
           <RightPanels 
             onLayerVisibilityToggle={() => {}}
+            currentPage="audio"
           />
         </div>
         

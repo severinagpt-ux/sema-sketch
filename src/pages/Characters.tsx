@@ -422,7 +422,7 @@ export default function Characters() {
         </div>
 
           {/* Right Panels */}
-          <RightPanels onLayerVisibilityToggle={() => {}} />
+          <RightPanels onLayerVisibilityToggle={() => {}} currentPage="characters" />
         </div>
         
         <BottomToolbar>

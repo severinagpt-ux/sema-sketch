@@ -16,7 +16,42 @@ export type Tool =
   | 'measure'
   | 'magnifier';
 
-export type Panel = 'layers' | 'inspector' | 'effects' | 'color' | 'assets' | 'cursor-zoom' | 'microscope' | 'ai-tools' | 'ai-image-gen' | 'settings';
+// Universal panels (available on all pages)
+export type UniversalPanel = 'ai-assistant' | 'assets' | 'settings';
+
+// Canvas/Image Editor panels
+export type CanvasPanel = 'layers' | 'inspector' | 'color' | 'effects' 
+  | 'cursor-zoom' | 'microscope' | 'ai-image-gen';
+
+// Storyboard panels
+export type StoryboardPanel = 'shot-list' | 'script' | 'shot-details' 
+  | 'visual-style' | 'scene-breakdown' | 'production-notes';
+
+// Characters panels
+export type CharactersPanel = 'character-dna' | 'personality' | 'backstory' 
+  | 'expressions' | 'voice-profile' | 'outfits' | 'multi-angle' | 'consistency';
+
+// Props/Scenes panels
+export type PropsPanel = 'props-library' | 'scene-library' | 'style-variations' 
+  | 'customization' | 'brand-integration' | 'marketplace' | 'multi-view';
+
+// Video Editor panels
+export type VideoPanel = 'shot-manager' | 'cinematic-styles' | 'timeline-controls' 
+  | 'color-grading' | 'effects-library' | 'audio-sync' | 'motion-analysis' 
+  | 'frame-extraction';
+
+// Audio Editor panels
+export type AudioPanel = 'audio-forge' | 'voice-synthesis' | 'music-generator' 
+  | 'sound-design' | 'audio-mixer' | 'spatial-audio' | 'waveform' 
+  | 'character-voices';
+
+// Combined types
+export type PageSpecificPanel = CanvasPanel | StoryboardPanel | CharactersPanel 
+  | PropsPanel | VideoPanel | AudioPanel;
+
+export type Panel = UniversalPanel | PageSpecificPanel;
+
+export type PageType = 'canvas' | 'storyboard' | 'characters' | 'props' | 'video' | 'audio';
 
 export type PanelSize = 'full' | 'top' | 'bottom';
 

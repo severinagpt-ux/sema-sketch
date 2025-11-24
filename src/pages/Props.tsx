@@ -491,7 +491,7 @@ export default function Props() {
         </div>
 
           {/* Right Panels */}
-          <RightPanels onLayerVisibilityToggle={() => {}} />
+          <RightPanels onLayerVisibilityToggle={() => {}} currentPage="props" />
         </div>
         
         <BottomToolbar>

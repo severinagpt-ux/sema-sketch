@@ -146,7 +146,7 @@ const Storyboard = () => {
           </div>
 
           {/* Right Panels */}
-          <RightPanels onLayerVisibilityToggle={handleLayerVisibilityToggle} />
+          <RightPanels onLayerVisibilityToggle={handleLayerVisibilityToggle} currentPage="storyboard" />
         </div>
         
         <BottomToolbar>

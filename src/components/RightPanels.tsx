@@ -16,6 +16,35 @@ import { ProjectSettingsPanel } from './panels/universal/ProjectSettingsPanel';
 import { VideoGenerationPanel } from './panels/VideoGenerationPanel';
 import { MotionAnalysisPanel } from './panels/MotionAnalysisPanel';
 import { FrameExtractionPanel } from './panels/FrameExtractionPanel';
+import { ShotListPanel } from './panels/storyboard/ShotListPanel';
+import { ScriptIntegrationPanel } from './panels/storyboard/ScriptIntegrationPanel';
+import { ShotDetailsPanel } from './panels/storyboard/ShotDetailsPanel';
+import { VisualStylePanel } from './panels/storyboard/VisualStylePanel';
+import { SceneBreakdownPanel } from './panels/storyboard/SceneBreakdownPanel';
+import { ProductionNotesPanel } from './panels/storyboard/ProductionNotesPanel';
+import { CharacterDNAPanel } from './panels/characters/CharacterDNAPanel';
+import { PersonalityEditorPanel } from './panels/characters/PersonalityEditorPanel';
+import { BackstoryManagerPanel } from './panels/characters/BackstoryManagerPanel';
+import { ExpressionLibraryPanel } from './panels/characters/ExpressionLibraryPanel';
+import { VoiceProfilePanel } from './panels/characters/VoiceProfilePanel';
+import { OutfitVariationsPanel } from './panels/characters/OutfitVariationsPanel';
+import { MultiAngleViewsPanel } from './panels/characters/MultiAngleViewsPanel';
+import { ConsistencyValidatorPanel } from './panels/characters/ConsistencyValidatorPanel';
+import { PropsLibraryPanel } from './panels/props/PropsLibraryPanel';
+import { SceneLibraryPanel } from './panels/props/SceneLibraryPanel';
+import { StyleVariationsPanel } from './panels/props/StyleVariationsPanel';
+import { CustomizationToolsPanel } from './panels/props/CustomizationToolsPanel';
+import { BrandIntegrationPanel } from './panels/props/BrandIntegrationPanel';
+import { MarketplacePanel } from './panels/props/MarketplacePanel';
+import { MultiViewManagerPanel } from './panels/props/MultiViewManagerPanel';
+import { ShotManagerPanel } from './panels/video/ShotManagerPanel';
+import { CinematicStylesPanel } from './panels/video/CinematicStylesPanel';
+import { TimelineControlsPanel } from './panels/video/TimelineControlsPanel';
+import { ColorGradingPanel } from './panels/video/ColorGradingPanel';
+import { EffectsLibraryPanel } from './panels/video/EffectsLibraryPanel';
+import { AudioSyncPanel } from './panels/video/AudioSyncPanel';
+import { AudioForgePanel } from './panels/audio/AudioForgePanel';
+import { VoiceSynthesisPanel } from './panels/audio/VoiceSynthesisPanel';
 import { PanelSize } from '@/lib/types';
 
 interface RightPanelsProps {
@@ -136,24 +165,53 @@ export const RightPanels = ({ onLayerVisibilityToggle, currentPage = 'canvas' }:
     if (activePanel === 'cursor-zoom') return <CursorZoomPanel size={panelSize === 'full' ? 'full' : 'half'} />;
     if (activePanel === 'microscope') return <MicroscopePanel size={panelSize === 'full' ? 'full' : 'half'} />;
     
+    // Storyboard panels
+    if (activePanel === 'shot-list') return <ShotListPanel />;
+    if (activePanel === 'script') return <ScriptIntegrationPanel />;
+    if (activePanel === 'shot-details') return <ShotDetailsPanel />;
+    if (activePanel === 'visual-style') return <VisualStylePanel />;
+    if (activePanel === 'scene-breakdown') return <SceneBreakdownPanel />;
+    if (activePanel === 'production-notes') return <ProductionNotesPanel />;
+    
+    // Characters panels
+    if (activePanel === 'character-dna') return <CharacterDNAPanel />;
+    if (activePanel === 'personality') return <PersonalityEditorPanel />;
+    if (activePanel === 'backstory') return <BackstoryManagerPanel />;
+    if (activePanel === 'expressions') return <ExpressionLibraryPanel />;
+    if (activePanel === 'voice-profile') return <VoiceProfilePanel />;
+    if (activePanel === 'outfits') return <OutfitVariationsPanel />;
+    if (activePanel === 'multi-angle') return <MultiAngleViewsPanel />;
+    if (activePanel === 'consistency') return <ConsistencyValidatorPanel />;
+    
+    // Props panels
+    if (activePanel === 'props-library') return <PropsLibraryPanel />;
+    if (activePanel === 'scene-library') return <SceneLibraryPanel />;
+    if (activePanel === 'style-variations') return <StyleVariationsPanel />;
+    if (activePanel === 'customization') return <CustomizationToolsPanel />;
+    if (activePanel === 'brand-integration') return <BrandIntegrationPanel />;
+    if (activePanel === 'marketplace') return <MarketplacePanel />;
+    if (activePanel === 'multi-view') return <MultiViewManagerPanel />;
+    
+    // Video panels
+    if (activePanel === 'shot-manager') return <ShotManagerPanel />;
+    if (activePanel === 'cinematic-styles') return <CinematicStylesPanel />;
+    if (activePanel === 'timeline-controls') return <TimelineControlsPanel />;
+    if (activePanel === 'color-grading') return <ColorGradingPanel />;
+    if (activePanel === 'effects-library') return <EffectsLibraryPanel />;
+    if (activePanel === 'audio-sync') return <AudioSyncPanel />;
+    if (activePanel === 'motion-analysis') return <MotionAnalysisPanel shot={{ id: '1', name: 'Shot 1', frames: [], duration: 5, firstFrame: '', lastFrame: '', prompt: '', status: 'ready' }} />;
+    if (activePanel === 'frame-extraction') return <FrameExtractionPanel shot={{ id: '1', name: 'Shot 1', frames: [], duration: 5, firstFrame: '', lastFrame: '', prompt: '', status: 'ready' }} />;
+    
+    // Audio panels
+    if (activePanel === 'audio-forge') return <AudioForgePanel />;
+    if (activePanel === 'voice-synthesis') return <VoiceSynthesisPanel />;
+    
     // Universal panels
     if (activePanel === 'ai-assistant') return <AIAssistantPanel currentPage={currentPage} />;
     if (activePanel === 'assets') return <AssetsBrowserPanel />;
     if (activePanel === 'settings') return <ProjectSettingsPanel />;
     
-    // Video panels
-    if (activePanel === 'motion-analysis') return <MotionAnalysisPanel shot={{ id: '1', name: 'Shot 1', frames: [], duration: 5, firstFrame: '', lastFrame: '', prompt: '', status: 'ready' }} />;
-    if (activePanel === 'frame-extraction') return <FrameExtractionPanel shot={{ id: '1', name: 'Shot 1', frames: [], duration: 5, firstFrame: '', lastFrame: '', prompt: '', status: 'ready' }} />;
-    
-    // Placeholder for other panels
-    return (
-      <div className="p-4">
-        <h3 className="font-semibold mb-2 capitalize">{activePanel}</h3>
-        <p className="text-sm text-muted-foreground">
-          {activePanel} panel coming soon...
-        </p>
-      </div>
-    );
+    return null;
   };
 
   const pagePanels = getPagePanels();

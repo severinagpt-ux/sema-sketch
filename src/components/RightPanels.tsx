@@ -123,7 +123,8 @@ const audioPanels: { icon: any; panel: AudioPanel; label: string }[] = [
 ];
 
 export const RightPanels = ({ onLayerVisibilityToggle, currentPage = 'canvas' }: RightPanelsProps) => {
-  const [activePanel, setActivePanel] = useState<Panel | null>('layers');
+  // Only default to 'layers' panel on canvas page, null everywhere else
+  const [activePanel, setActivePanel] = useState<Panel | null>(currentPage === 'canvas' ? 'layers' : null);
   const [panelSize, setPanelSize] = useState<PanelSize>('full');
 
   const handlePanelClick = (panel: Panel, size: PanelSize = 'full') => {

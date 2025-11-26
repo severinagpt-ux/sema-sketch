@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { TopBar } from '@/components/TopBar';
+import { LeftSidebar } from '@/components/LeftSidebar';
 import { BottomToolbar } from '@/components/BottomToolbar';
 import { RightPanels } from '@/components/RightPanels';
 import { ToolProvider } from '@/contexts/ToolContext';
@@ -147,23 +148,9 @@ export default function Props() {
         <TopBar />
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Toolbar */}
-        <div className="w-14 bg-toolbar border-r border-panel-border flex flex-col items-center py-2 gap-1">
-          {propsTools.map(({ icon: Icon, tool, label }) => (
-            <Button
-              key={tool}
-              variant={activeTool === tool ? "default" : "ghost"}
-              size="icon"
-              className="tool-button"
-              onClick={() => setActiveTool(tool)}
-              title={label}
-            >
-              <Icon className="w-5 h-5" />
-            </Button>
-          ))}
-          </div>
-
-          {/* Main Content Area */}
+        <LeftSidebar currentPage="props" />
+        
+        {/* Main Content Area */}
           <div className="flex-1 flex flex-col bg-canvas overflow-hidden">
           {/* Asset Browser Header */}
           <div className="bg-panel border-b border-panel-border">

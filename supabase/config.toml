@@ -1,0 +1,10 @@
+project_id = "umunvrorcpenvissevek"
+
+[functions.generate-character-image]
+verify_jwt = false
+
+[functions.generate-storyboard-panel]
+verify_jwt = false
+
+[functions.validate-character-consistency]
+verify_jwt = false

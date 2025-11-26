@@ -1,9 +1,65 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, AlertCircle, Play } from "lucide-react";
+import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { useCharacterAI } from "@/hooks/useCharacterAI";
+import { useState } from "react";
 
 export const ConsistencyValidatorPanel = () => {
+  const { loading, validateConsistency } = useCharacterAI();
+  const [validationResult, setValidationResult] = useState<any>(null);
+
+  const handleValidation = async () => {
+    // Mock character images - in real app, these would be actual character images
+    const mockImages = [
+      "data:image/png;base64,placeholder1",
+      "data:image/png;base64,placeholder2",
+      "data:image/png;base64,placeholder3",
+    ];
+
+    const mockDNA = {
+      faceShape: "oval",
+      eyeSize: "medium",
+      noseSize: "medium",
+      mouthSize: "medium",
+      hairStyle: "shoulder length",
+      bodyType: "athletic",
+      skinTone: "medium"
+    };
+
+    const result = await validateConsistency(mockImages, mockDNA);
+    if (result) {
+      setValidationResult(result);
+    }
+  };
+
+  const checks = validationResult?.featureScores ? [
+    { 
+      name: "Facial Features", 
+      score: validationResult.featureScores.facialFeatures, 
+      status: validationResult.featureScores.facialFeatures >= 95 ? "good" : "warning" 
+    },
+    { 
+      name: "Hair Style", 
+      score: validationResult.featureScores.hairStyle, 
+      status: validationResult.featureScores.hairStyle >= 95 ? "good" : "warning" 
+    },
+    { 
+      name: "Skin Tone", 
+      score: validationResult.featureScores.skinTone, 
+      status: validationResult.featureScores.skinTone >= 95 ? "good" : "warning" 
+    },
+    { 
+      name: "Body Proportions", 
+      score: validationResult.featureScores.bodyProportions, 
+      status: validationResult.featureScores.bodyProportions >= 95 ? "good" : "warning" 
+    },
+  ] : [
+    { name: "Facial Features", score: 99.2, status: "good" },
+    { name: "Hair Style", score: 99.8, status: "good" },
+    { name: "Skin Tone", score: 99.5, status: "good" },
+    { name: "Body Proportions", score: 98.9, status: "warning" },
+  ];
+
   return (
     <div className="flex flex-col h-full bg-background">
       <div className="p-4 border-b border-border">
@@ -12,111 +68,93 @@ export const ConsistencyValidatorPanel = () => {
           <h3 className="font-semibold text-foreground">Consistency Validator</h3>
         </div>
         <p className="text-xs text-muted-foreground">
-          Check character consistency
+          AI-powered consistency analysis
         </p>
       </div>
 
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
-          <Button className="w-full">
-            <Play className="w-4 h-4 mr-2" />
-            Run Validation Check
+          <Button 
+            className="w-full" 
+            size="lg"
+            onClick={handleValidation}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Analyzing...
+              </>
+            ) : (
+              "Run Validation Check"
+            )}
           </Button>
 
-          <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-semibold text-primary">Overall Score</span>
-              <span className="text-3xl font-bold text-primary">99.9%</span>
+          <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-primary mb-2">
+                {validationResult?.overallScore ?? 99.9}%
+              </div>
+              <div className="text-sm text-muted-foreground">Overall Score</div>
+              <div className="text-xs text-primary mt-1">Excellent Consistency</div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Excellent consistency across all generations
-            </p>
           </div>
 
-          <div className="space-y-3">
-            <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
-              <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium">Facial Features</span>
-                  <Badge variant="default">100%</Badge>
+          <div className="space-y-2">
+            {checks.map((check, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+              >
+                <div className="flex items-center gap-2">
+                  {check.status === "good" ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 text-yellow-500" />
+                  )}
+                  <span className="text-sm font-medium">{check.name}</span>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Perfect match across all angles and expressions
-                </p>
+                <span className="text-sm text-primary font-semibold">
+                  {check.score}%
+                </span>
               </div>
-            </div>
+            ))}
+          </div>
 
-            <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
-              <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium">Body Proportions</span>
-                  <Badge variant="default">99.8%</Badge>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Consistent body structure maintained
-                </p>
+          <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+            <div className="text-xs font-semibold text-muted-foreground uppercase">
+              Validation Details
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div>
+                <div className="text-muted-foreground text-xs">Images Analyzed</div>
+                <div className="font-semibold">{validationResult?.imagesAnalyzed ?? 47}</div>
               </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
-              <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium">Skin Tone</span>
-                  <Badge variant="default">100%</Badge>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Accurate color matching in all lighting
-                </p>
+              <div>
+                <div className="text-muted-foreground text-xs">Last Check</div>
+                <div className="font-semibold">2 min ago</div>
               </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
-              <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium">Hair Style</span>
-                  <Badge variant="secondary">99.5%</Badge>
+              <div className="col-span-2">
+                <div className="text-muted-foreground text-xs">DNA Lock Status</div>
+                <div className="font-semibold text-green-500">
+                  {validationResult?.dnaLockStatus === "active" ? "Active" : "Needs Adjustment"}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Minor variations in hair volume detected
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
-              <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium">Expressions</span>
-                  <Badge variant="default">100%</Badge>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Natural and consistent emotional range
-                </p>
               </div>
             </div>
           </div>
 
-          <div className="p-3 bg-muted rounded-lg">
-            <p className="text-xs font-semibold mb-2">Validation Details</p>
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Images Analyzed:</span>
-                <span>47</span>
+          {validationResult?.inconsistencies && validationResult.inconsistencies.length > 0 && (
+            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3">
+              <div className="text-xs font-semibold text-yellow-600 dark:text-yellow-400 mb-2">
+                Inconsistencies Found
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Last Check:</span>
-                <span>2 minutes ago</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">DNA Lock:</span>
-                <span className="text-primary">Active</span>
-              </div>
+              <ul className="text-xs space-y-1 text-muted-foreground">
+                {validationResult.inconsistencies.map((issue: string, idx: number) => (
+                  <li key={idx}>• {issue}</li>
+                ))}
+              </ul>
             </div>
-          </div>
+          )}
         </div>
       </ScrollArea>
     </div>

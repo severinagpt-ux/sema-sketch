@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { TopBar } from '@/components/TopBar';
+import { LeftSidebar } from '@/components/LeftSidebar';
 import { BottomToolbar } from '@/components/BottomToolbar';
 import { RightPanels } from '@/components/RightPanels';
 import { Tool } from '@/lib/types';
@@ -37,21 +38,8 @@ const AudioEditor = () => {
         <TopBar />
         
         <div className="flex-1 flex overflow-hidden">
-          {/* Left Toolbar */}
-          <div className="w-14 bg-toolbar border-r border-panel-border flex flex-col items-center py-2 gap-1">
-            {audioTools.map(({ icon: Icon, label }) => (
-              <Button
-                key={label}
-                variant="ghost"
-                size="icon"
-                className="tool-button"
-                title={label}
-              >
-                <Icon className="w-5 h-5" />
-              </Button>
-            ))}
-          </div>
-
+          <LeftSidebar currentPage="audio" />
+          
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col">
             {/* Waveform Display Area */}

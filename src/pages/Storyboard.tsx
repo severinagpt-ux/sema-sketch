@@ -3,6 +3,7 @@ import { LeftToolbar } from "@/components/LeftToolbar";
 import { RightPanels } from "@/components/RightPanels";
 import { BottomToolbar } from "@/components/BottomToolbar";
 import { ToolProvider } from "@/contexts/ToolContext";
+import { LeftSidebar } from "@/components/LeftSidebar";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -89,7 +90,7 @@ export default function Storyboard() {
       <div className="h-screen flex flex-col bg-background">
         <TopBar />
       <div className="flex-1 flex overflow-hidden">
-        <LeftToolbar onToolChange={() => {}} />
+        <LeftSidebar currentPage="storyboard" />
         
         {/* Main Storyboard Workspace */}
         <div className="flex-1 flex flex-col bg-muted/30">

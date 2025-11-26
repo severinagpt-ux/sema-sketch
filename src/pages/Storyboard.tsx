@@ -2,6 +2,7 @@ import { TopBar } from "@/components/TopBar";
 import { LeftToolbar } from "@/components/LeftToolbar";
 import { RightPanels } from "@/components/RightPanels";
 import { BottomToolbar } from "@/components/BottomToolbar";
+import { ToolProvider } from "@/contexts/ToolContext";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -84,8 +85,9 @@ export default function Storyboard() {
   ];
 
   return (
-    <div className="h-screen flex flex-col bg-background">
-      <TopBar />
+    <ToolProvider>
+      <div className="h-screen flex flex-col bg-background">
+        <TopBar />
       <div className="flex-1 flex overflow-hidden">
         <LeftToolbar onToolChange={() => {}} />
         
@@ -281,7 +283,8 @@ export default function Storyboard() {
 
         <RightPanels currentPage="storyboard" onLayerVisibilityToggle={() => {}} />
       </div>
-      <BottomToolbar><div /></BottomToolbar>
-    </div>
+        <BottomToolbar><div /></BottomToolbar>
+      </div>
+    </ToolProvider>
   );
 }

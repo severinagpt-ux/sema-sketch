@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Layers, Info, Wand, Palette, ChevronLeft, Package, ZoomIn, Microscope, ImagePlus, MessageSquare, Settings as SettingsIcon, Film, Users, Box, Video, Music, FileText, Palette as PaletteIcon, Lightbulb, ListChecks, Ruler, Camera, Sparkles } from 'lucide-react';
+import { Layers, Info, Wand, Palette, ChevronLeft, Package, ZoomIn, Microscope, ImagePlus, MessageSquare, Settings as SettingsIcon, Film, Users, Box, Video, Music, FileText, Palette as PaletteIcon, Lightbulb, ListChecks, Ruler, Camera, Sparkles, Images, Library } from 'lucide-react';
 import { Button } from './ui/button';
 import { Panel, PageType, UniversalPanel, CanvasPanel, StoryboardPanel, CharactersPanel, PropsPanel, VideoPanel, AudioPanel } from '@/lib/types';
 import { LayersPanel } from './panels/LayersPanel';
@@ -30,6 +30,8 @@ import { VoiceProfilePanel } from './panels/characters/VoiceProfilePanel';
 import { OutfitVariationsPanel } from './panels/characters/OutfitVariationsPanel';
 import { MultiAngleViewsPanel } from './panels/characters/MultiAngleViewsPanel';
 import { ConsistencyValidatorPanel } from './panels/characters/ConsistencyValidatorPanel';
+import { DNAProfileLibraryPanel } from './panels/characters/DNAProfileLibraryPanel';
+import { CharacterGalleryPanel } from './panels/characters/CharacterGalleryPanel';
 import { PropsLibraryPanel } from './panels/props/PropsLibraryPanel';
 import { SceneLibraryPanel } from './panels/props/SceneLibraryPanel';
 import { StyleVariationsPanel } from './panels/props/StyleVariationsPanel';
@@ -80,6 +82,8 @@ const storyboardPanels: { icon: any; panel: StoryboardPanel; label: string }[] =
 ];
 
 const charactersPanels: { icon: any; panel: CharactersPanel; label: string }[] = [
+  { icon: Images, panel: 'character-gallery', label: 'Character Gallery' },
+  { icon: Library, panel: 'dna-library', label: 'DNA Library' },
   { icon: Users, panel: 'character-dna', label: 'Character DNA' },
   { icon: Info, panel: 'personality', label: 'Personality' },
   { icon: FileText, panel: 'backstory', label: 'Backstory' },
@@ -175,6 +179,8 @@ export const RightPanels = ({ onLayerVisibilityToggle, currentPage = 'canvas' }:
     if (activePanel === 'production-notes') return <ProductionNotesPanel />;
     
     // Characters panels
+    if (activePanel === 'character-gallery') return <CharacterGalleryPanel onSelectCharacter={(char) => console.log('Selected:', char)} />;
+    if (activePanel === 'dna-library') return <DNAProfileLibraryPanel onLoadProfile={(dna) => console.log('Loaded DNA:', dna)} />;
     if (activePanel === 'character-dna') return <CharacterDNAPanel />;
     if (activePanel === 'personality') return <PersonalityEditorPanel />;
     if (activePanel === 'backstory') return <BackstoryManagerPanel />;

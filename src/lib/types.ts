@@ -28,7 +28,7 @@ export type StoryboardPanel = 'shot-list' | 'script' | 'shot-details'
   | 'visual-style' | 'scene-breakdown' | 'production-notes';
 
 // Characters panels
-export type CharactersPanel = 'character-dna' | 'personality' | 'backstory' 
+export type CharactersPanel = 'character-gallery' | 'dna-library' | 'character-dna' | 'personality' | 'backstory' 
   | 'expressions' | 'voice-profile' | 'outfits' | 'multi-angle' | 'consistency';
 
 // Props/Scenes panels

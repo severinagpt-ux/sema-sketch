@@ -6,6 +6,7 @@ import { ToolProvider } from "@/contexts/ToolContext";
 import { LeftSidebar } from "@/components/LeftSidebar";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { CharacterCreationWizard } from "@/components/panels/characters/CharacterCreationWizard";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Users, Sparkles, Upload, Search } from "lucide-react";
@@ -14,6 +15,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function Characters() {
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>("char-1");
+  const [showWizard, setShowWizard] = useState(false);
 
   const characters = [
     {
@@ -44,6 +46,12 @@ export default function Characters() {
       status: "draft"
     }
   ];
+
+  const handleToolClick = (action: string) => {
+    if (action === "create") {
+      setShowWizard(true);
+    }
+  };
 
   const characterTools = [
     { id: "new", icon: Plus, label: "New Character", action: "create" },
@@ -79,7 +87,12 @@ export default function Characters() {
                   />
                 </div>
                 {characterTools.map(tool => (
-                  <Button key={tool.id} variant="outline" size="sm">
+                  <Button 
+                    key={tool.id} 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleToolClick(tool.action)}
+                  >
                     <tool.icon className="w-4 h-4 mr-2" />
                     {tool.label}
                   </Button>
@@ -254,6 +267,15 @@ export default function Characters() {
         <RightPanels currentPage="characters" onLayerVisibilityToggle={() => {}} />
       </div>
         <BottomToolbar><div /></BottomToolbar>
+
+        <CharacterCreationWizard 
+          open={showWizard}
+          onClose={() => setShowWizard(false)}
+          onComplete={(id) => {
+            console.log('Character created:', id);
+            setShowWizard(false);
+          }}
+        />
       </div>
     </ToolProvider>
   );

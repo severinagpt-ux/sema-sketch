@@ -1,9 +1,8 @@
 import { TopBar } from "@/components/TopBar";
-import { LeftToolbar } from "@/components/LeftToolbar";
+import { LeftSidebar } from "@/components/LeftSidebar";
 import { RightPanels } from "@/components/RightPanels";
 import { BottomToolbar } from "@/components/BottomToolbar";
 import { ToolProvider } from "@/contexts/ToolContext";
-import { LeftSidebar } from "@/components/LeftSidebar";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

@@ -14,7 +14,124 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      character_dna_profiles: {
+        Row: {
+          created_at: string
+          description: string | null
+          dna_data: Json
+          id: string
+          is_public: boolean | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          dna_data: Json
+          id?: string
+          is_public?: boolean | null
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          dna_data?: Json
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      character_images: {
+        Row: {
+          character_id: string
+          created_at: string
+          id: string
+          image_type: string
+          image_url: string
+          metadata: Json | null
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          id?: string
+          image_type: string
+          image_url: string
+          metadata?: Json | null
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          id?: string
+          image_type?: string
+          image_url?: string
+          metadata?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_images_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      characters: {
+        Row: {
+          consistency_score: number | null
+          created_at: string
+          dna_profile_id: string | null
+          id: string
+          name: string
+          personality_type: string | null
+          role: string | null
+          thumbnail_url: string | null
+          total_generations: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          consistency_score?: number | null
+          created_at?: string
+          dna_profile_id?: string | null
+          id?: string
+          name: string
+          personality_type?: string | null
+          role?: string | null
+          thumbnail_url?: string | null
+          total_generations?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          consistency_score?: number | null
+          created_at?: string
+          dna_profile_id?: string | null
+          id?: string
+          name?: string
+          personality_type?: string | null
+          role?: string | null
+          thumbnail_url?: string | null
+          total_generations?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "characters_dna_profile_id_fkey"
+            columns: ["dna_profile_id"]
+            isOneToOne: false
+            referencedRelation: "character_dna_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

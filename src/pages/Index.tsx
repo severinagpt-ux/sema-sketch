@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TopBar } from '@/components/TopBar';
-import { LeftToolbar } from '@/components/LeftToolbar';
+import { LeftSidebar } from '@/components/LeftSidebar';
 import { Canvas } from '@/components/Canvas';
 import { RightPanels } from '@/components/RightPanels';
 import { BottomToolbar } from '@/components/BottomToolbar';
@@ -53,8 +53,9 @@ const Index = () => {
         <TopBar />
         
         <div className="flex-1 flex overflow-hidden">
-          <LeftToolbar 
-            onToolChange={setActiveTool}
+          <LeftSidebar 
+            currentPage="canvas"
+            onToolChange={(tool) => setActiveTool(tool as Tool)}
           />
           
           <div className="flex-1 flex overflow-hidden">

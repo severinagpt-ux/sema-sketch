@@ -1,5 +1,4 @@
 import { TopBar } from "@/components/TopBar";
-import { LeftToolbar } from "@/components/LeftToolbar";
 import { RightPanels } from "@/components/RightPanels";
 import { BottomToolbar } from "@/components/BottomToolbar";
 import { ToolProvider } from "@/contexts/ToolContext";

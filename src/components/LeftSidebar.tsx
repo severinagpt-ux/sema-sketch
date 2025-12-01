@@ -1,198 +1,174 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 import { ScrollArea } from './ui/scroll-area';
 import { 
-  Menu, X, Layers, Users, Film, Box, Music, Sparkles,
-  FileText, Camera, Palette, Wand2, Settings, Info
+  Menu, ChevronRight, MousePointer2, Wand2, Lasso, Crop, PenTool, 
+  Paintbrush, Eraser, Layers, Users, Film, Box, Music, Sparkles,
+  FileText, Camera, Palette, Settings, Info, MessageSquare, Package
 } from 'lucide-react';
 import { PageType } from '@/lib/types';
+import { useToolContext } from '@/contexts/ToolContext';
 
 interface LeftSidebarProps {
   currentPage?: PageType;
+  onToolChange?: (tool: string) => void;
 }
 
-export const LeftSidebar = ({ currentPage = 'canvas' }: LeftSidebarProps) => {
-  const [open, setOpen] = useState(false);
+// Universal tools (bottom section - available on all pages)
+const universalTools = [
+  { icon: MessageSquare, id: 'ai-chat', label: 'AI Chat' },
+  { icon: Package, id: 'assets', label: 'Assets' },
+  { icon: Settings, id: 'settings', label: 'Settings' },
+];
 
-  // Pages that should show a drawer instead of toolbar
-  const drawerPages: PageType[] = ['storyboard', 'characters', 'props', 'video', 'audio'];
-  const shouldShowDrawer = drawerPages.includes(currentPage);
+export const LeftSidebar = ({ currentPage = 'canvas', onToolChange }: LeftSidebarProps) => {
+  const [activeDrawer, setActiveDrawer] = useState<string | null>(null);
+  const { activeTool, setActiveTool } = useToolContext();
 
-  if (!shouldShowDrawer) {
-    return null; // Canvas page uses LeftToolbar instead
-  }
-
-  const getPageContent = () => {
-    switch (currentPage) {
-      case 'storyboard':
-        return {
-          title: 'Storyboard Tools',
-          sections: [
-            {
-              title: 'Shot Management',
-              items: [
-                { icon: Camera, label: 'Add Shot', desc: 'Create new storyboard panel' },
-                { icon: Film, label: 'Scene Manager', desc: 'Organize scenes and sequences' },
-                { icon: FileText, label: 'Script Sync', desc: 'Sync with script' }
-              ]
-            },
-            {
-              title: 'Visual Tools',
-              items: [
-                { icon: Palette, label: 'Visual Style', desc: 'Apply cinematic styles' },
-                { icon: Sparkles, label: 'AI Generate', desc: 'Generate panels with AI' },
-                { icon: Wand2, label: 'Auto-Layout', desc: 'Smart panel arrangement' }
-              ]
-            }
-          ]
-        };
-      
-      case 'characters':
-        return {
-          title: 'Character Tools',
-          sections: [
-            {
-              title: 'Character Creation',
-              items: [
-                { icon: Users, label: 'New Character', desc: 'Create character profile' },
-                { icon: Sparkles, label: 'AI Generate', desc: 'Generate character with AI' },
-                { icon: Camera, label: 'Multi-Angle Views', desc: 'Generate all angles' }
-              ]
-            },
-            {
-              title: 'Character Development',
-              items: [
-                { icon: FileText, label: 'Backstory', desc: 'Write character history' },
-                { icon: Palette, label: 'Outfits', desc: 'Design costume variations' },
-                { icon: Info, label: 'Personality', desc: 'Define traits and behavior' }
-              ]
-            }
-          ]
-        };
-      
-      case 'props':
-        return {
-          title: 'Props & Scenes',
-          sections: [
-            {
-              title: 'Asset Management',
-              items: [
-                { icon: Box, label: 'Props Library', desc: 'Browse prop collection' },
-                { icon: Film, label: 'Scene Library', desc: 'Browse scene templates' },
-                { icon: Sparkles, label: 'AI Generate', desc: 'Create props with AI' }
-              ]
-            },
-            {
-              title: 'Customization',
-              items: [
-                { icon: Palette, label: 'Style Variations', desc: 'Apply style changes' },
-                { icon: Wand2, label: 'Customize', desc: 'Modify asset properties' },
-                { icon: Camera, label: 'Multi-View', desc: 'View from all angles' }
-              ]
-            }
-          ]
-        };
-      
-      case 'video':
-        return {
-          title: 'Video Tools',
-          sections: [
-            {
-              title: 'Shot Management',
-              items: [
-                { icon: Film, label: 'Shot Manager', desc: 'Organize video shots' },
-                { icon: Camera, label: 'Motion Analysis', desc: 'Analyze movement' },
-                { icon: Layers, label: 'Frame Extract', desc: 'Extract key frames' }
-              ]
-            },
-            {
-              title: 'Enhancement',
-              items: [
-                { icon: Palette, label: 'Color Grading', desc: 'Adjust colors and tones' },
-                { icon: Sparkles, label: 'Cinematic Styles', desc: 'Apply film looks' },
-                { icon: Wand2, label: 'Effects', desc: 'Add visual effects' }
-              ]
-            }
-          ]
-        };
-      
-      case 'audio':
-        return {
-          title: 'Audio Tools',
-          sections: [
-            {
-              title: 'Audio Creation',
-              items: [
-                { icon: Music, label: 'Audio Forge', desc: 'Record and edit audio' },
-                { icon: Sparkles, label: 'Voice Synthesis', desc: 'Generate AI voices' },
-                { icon: Wand2, label: 'Music Generator', desc: 'Create music with AI' }
-              ]
-            },
-            {
-              title: 'Processing',
-              items: [
-                { icon: Palette, label: 'Audio Mixer', desc: 'Mix multiple tracks' },
-                { icon: Settings, label: 'Effects', desc: 'Apply audio effects' },
-                { icon: Camera, label: 'Spatial Audio', desc: '3D audio positioning' }
-              ]
-            }
-          ]
-        };
-      
-      default:
-        return { title: 'Tools', sections: [] };
+  const handleToolClick = (toolId: string) => {
+    if (activeTool === toolId) {
+      setActiveTool('select' as any);
+      onToolChange?.('select' as any);
+    } else {
+      setActiveTool(toolId as any);
+      onToolChange?.(toolId as any);
     }
   };
 
-  const content = getPageContent();
+  const handleDrawerToggle = (drawerId: string) => {
+    setActiveDrawer(activeDrawer === drawerId ? null : drawerId);
+  };
+
+  // Get page-specific tools
+  const getPageTools = () => {
+    switch (currentPage) {
+      case 'canvas':
+        return [
+          { icon: MousePointer2, id: 'select', label: 'Select' },
+          { icon: Wand2, id: 'magic-wand', label: 'Magic Wand' },
+          { icon: Lasso, id: 'lasso', label: 'Lasso' },
+          { icon: Crop, id: 'crop', label: 'Crop' },
+          { icon: PenTool, id: 'pen', label: 'Pen' },
+          { icon: Paintbrush, id: 'brush', label: 'Brush' },
+          { icon: Eraser, id: 'eraser', label: 'Eraser' },
+        ];
+      case 'storyboard':
+        return [
+          { icon: Camera, id: 'add-shot', label: 'Add Shot' },
+          { icon: Film, id: 'scene-manager', label: 'Scene Manager' },
+          { icon: FileText, id: 'script', label: 'Script' },
+          { icon: Palette, id: 'visual-style', label: 'Visual Style' },
+          { icon: Sparkles, id: 'ai-generate', label: 'AI Generate' },
+        ];
+      case 'characters':
+        return [
+          { icon: Users, id: 'new-character', label: 'New Character' },
+          { icon: Sparkles, id: 'ai-generate', label: 'AI Generate' },
+          { icon: Camera, id: 'multi-angle', label: 'Multi-Angle Views' },
+          { icon: Palette, id: 'outfits', label: 'Outfits' },
+          { icon: Info, id: 'personality', label: 'Personality' },
+        ];
+      case 'props':
+        return [
+          { icon: Box, id: 'props-library', label: 'Props Library' },
+          { icon: Film, id: 'scene-library', label: 'Scene Library' },
+          { icon: Sparkles, id: 'ai-generate', label: 'AI Generate' },
+          { icon: Palette, id: 'style-variations', label: 'Style Variations' },
+          { icon: Wand2, id: 'customize', label: 'Customize' },
+        ];
+      case 'video':
+        return [
+          { icon: Film, id: 'shot-manager', label: 'Shot Manager' },
+          { icon: Camera, id: 'motion-analysis', label: 'Motion Analysis' },
+          { icon: Layers, id: 'frame-extract', label: 'Frame Extract' },
+          { icon: Palette, id: 'color-grading', label: 'Color Grading' },
+          { icon: Sparkles, id: 'cinematic-styles', label: 'Cinematic Styles' },
+        ];
+      case 'audio':
+        return [
+          { icon: Music, id: 'audio-forge', label: 'Audio Forge' },
+          { icon: Sparkles, id: 'voice-synthesis', label: 'Voice Synthesis' },
+          { icon: Wand2, id: 'music-generator', label: 'Music Generator' },
+          { icon: Palette, id: 'audio-mixer', label: 'Audio Mixer' },
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const pageTools = getPageTools();
+
+  const renderDrawerContent = () => {
+    if (!activeDrawer) return null;
+    
+    return (
+      <ScrollArea className="flex-1">
+        <div className="p-4">
+          <h3 className="text-sm font-semibold mb-4">{activeDrawer}</h3>
+          <p className="text-xs text-muted-foreground">Drawer content for {activeDrawer}</p>
+        </div>
+      </ScrollArea>
+    );
+  };
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="fixed left-2 top-20 z-50 bg-toolbar border border-panel-border shadow-lg hover:bg-accent"
+    <div className="flex h-full">
+      {/* Left Icon Button Bar */}
+      <div className="w-12 bg-toolbar border-r border-panel-border flex flex-col items-center py-2 gap-1">
+        {/* Page-Specific Tools (Top Section) */}
+        {pageTools.map(({ icon: Icon, id, label }) => (
+          <Button
+            key={id}
+            variant={activeTool === id ? "default" : "ghost"}
+            size="icon"
+            className="tool-button"
+            onClick={() => handleToolClick(id)}
+            title={label}
+          >
+            <Icon className="w-5 h-5" />
+          </Button>
+        ))}
+        
+        {/* Divider */}
+        <div className="h-px w-8 bg-border my-2" />
+        
+        {/* Universal Tools (Bottom Section) */}
+        {universalTools.map(({ icon: Icon, id, label }) => (
+          <Button
+            key={id}
+            variant={activeDrawer === id ? "default" : "ghost"}
+            size="icon"
+            className="tool-button"
+            onClick={() => handleDrawerToggle(id)}
+            title={label}
+          >
+            <Icon className="w-5 h-5" />
+          </Button>
+        ))}
+      </div>
+
+      {/* Drawer Content */}
+      {activeDrawer && (
+        <div 
+          className="bg-panel-bg border-r border-panel-border panel-slide"
+          style={{ width: '280px' }}
         >
-          <Menu className="w-5 h-5" />
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-80 p-0">
-        <SheetHeader className="p-4 border-b border-border">
-          <SheetTitle className="flex items-center gap-2">
-            <Layers className="w-5 h-5 text-primary" />
-            {content.title}
-          </SheetTitle>
-        </SheetHeader>
-        <ScrollArea className="h-[calc(100vh-5rem)]">
-          <div className="p-4 space-y-6">
-            {content.sections.map((section, idx) => (
-              <div key={idx}>
-                <h3 className="text-sm font-semibold text-muted-foreground mb-3">
-                  {section.title}
-                </h3>
-                <div className="space-y-2">
-                  {section.items.map((item, itemIdx) => (
-                    <Button
-                      key={itemIdx}
-                      variant="outline"
-                      className="w-full justify-start h-auto p-3"
-                      onClick={() => setOpen(false)}
-                    >
-                      <item.icon className="w-4 h-4 mr-3 flex-shrink-0" />
-                      <div className="text-left">
-                        <div className="font-medium text-sm">{item.label}</div>
-                        <div className="text-xs text-muted-foreground">{item.desc}</div>
-                      </div>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            ))}
+          <div className="h-full flex flex-col">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-panel-border">
+              <h2 className="text-sm font-semibold capitalize">{activeDrawer.replace(/-/g, ' ')}</h2>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="icon-button h-6 w-6"
+                onClick={() => setActiveDrawer(null)}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+            {renderDrawerContent()}
           </div>
-        </ScrollArea>
-      </SheetContent>
-    </Sheet>
+        </div>
+      )}
+    </div>
   );
 };

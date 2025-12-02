@@ -35,6 +35,7 @@ import { CharacterGalleryPanel } from './panels/characters/CharacterGalleryPanel
 import { CharacterInputPanel } from './panels/characters/CharacterInputPanel';
 import { CharacterSculptPanel } from './panels/characters/CharacterSculptPanel';
 import { ManualSculptToolsPanel } from './panels/characters/ManualSculptToolsPanel';
+import { CharacterPackPanel } from './panels/characters/CharacterPackPanel';
 import { PropsLibraryPanel } from './panels/props/PropsLibraryPanel';
 import { SceneLibraryPanel } from './panels/props/SceneLibraryPanel';
 import { StyleVariationsPanel } from './panels/props/StyleVariationsPanel';
@@ -87,6 +88,7 @@ const storyboardPanels: { icon: any; panel: StoryboardPanel; label: string }[] =
 const charactersPanels: { icon: any; panel: CharactersPanel; label: string }[] = [
   { icon: ImagePlus, panel: 'character-input', label: 'Character Input' },
   { icon: Wand, panel: 'character-sculpt', label: 'AI Sculpt Tools' },
+  { icon: Package, panel: 'character-pack', label: 'Character Pack' },
   { icon: Images, panel: 'character-gallery', label: 'Character Gallery' },
   { icon: Library, panel: 'dna-library', label: 'DNA Library' },
   { icon: Users, panel: 'character-dna', label: 'Character DNA' },
@@ -192,6 +194,7 @@ export const RightPanels = ({ onLayerVisibilityToggle, currentPage = 'canvas' }:
     if (activePanel === 'outfits') return <OutfitVariationsPanel />;
     if (activePanel === 'multi-angle') return <MultiAngleViewsPanel />;
     if (activePanel === 'consistency') return <ConsistencyValidatorPanel />;
+    if (activePanel === 'character-pack') return <CharacterPackPanel />;
     
     // Props panels
     if (activePanel === 'props-library') return <PropsLibraryPanel />;

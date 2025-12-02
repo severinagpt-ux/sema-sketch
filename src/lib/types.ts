@@ -29,7 +29,7 @@ export type StoryboardPanel = 'shot-list' | 'script' | 'shot-details'
 
 // Characters panels
 export type CharactersPanel = 'character-input' | 'character-sculpt' | 'character-gallery' | 'dna-library' 
-  | 'character-dna' | 'personality' | 'expressions' | 'outfits' | 'multi-angle' | 'consistency';
+  | 'character-dna' | 'personality' | 'expressions' | 'outfits' | 'multi-angle' | 'consistency' | 'character-pack';
 
 // Props/Scenes panels
 export type PropsPanel = 'props-library' | 'scene-library' | 'style-variations' 

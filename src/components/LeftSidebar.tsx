@@ -63,10 +63,12 @@ export const LeftSidebar = ({ currentPage = 'canvas', onToolChange }: LeftSideba
       case 'characters':
         return [
           { icon: Users, id: 'new-character', label: 'New Character' },
+          { icon: Paintbrush, id: 'recolor', label: 'Recolor Brush' },
+          { icon: Lasso, id: 'lasso', label: 'Lasso Select' },
+          { icon: Crop, id: 'proportion-warp', label: 'Proportion Warp' },
+          { icon: Eraser, id: 'bg-eraser', label: 'Background Eraser' },
+          { icon: Layers, id: 'layer-view', label: 'Layer View' },
           { icon: Sparkles, id: 'ai-generate', label: 'AI Generate' },
-          { icon: Camera, id: 'multi-angle', label: 'Multi-Angle Views' },
-          { icon: Palette, id: 'outfits', label: 'Outfits' },
-          { icon: Info, id: 'personality', label: 'Personality' },
         ];
       case 'props':
         return [

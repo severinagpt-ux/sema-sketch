@@ -32,6 +32,9 @@ import { MultiAngleViewsPanel } from './panels/characters/MultiAngleViewsPanel';
 import { ConsistencyValidatorPanel } from './panels/characters/ConsistencyValidatorPanel';
 import { DNAProfileLibraryPanel } from './panels/characters/DNAProfileLibraryPanel';
 import { CharacterGalleryPanel } from './panels/characters/CharacterGalleryPanel';
+import { CharacterInputPanel } from './panels/characters/CharacterInputPanel';
+import { CharacterSculptPanel } from './panels/characters/CharacterSculptPanel';
+import { ManualSculptToolsPanel } from './panels/characters/ManualSculptToolsPanel';
 import { PropsLibraryPanel } from './panels/props/PropsLibraryPanel';
 import { SceneLibraryPanel } from './panels/props/SceneLibraryPanel';
 import { StyleVariationsPanel } from './panels/props/StyleVariationsPanel';
@@ -82,13 +85,13 @@ const storyboardPanels: { icon: any; panel: StoryboardPanel; label: string }[] =
 ];
 
 const charactersPanels: { icon: any; panel: CharactersPanel; label: string }[] = [
+  { icon: ImagePlus, panel: 'character-input', label: 'Character Input' },
+  { icon: Wand, panel: 'character-sculpt', label: 'AI Sculpt Tools' },
   { icon: Images, panel: 'character-gallery', label: 'Character Gallery' },
   { icon: Library, panel: 'dna-library', label: 'DNA Library' },
   { icon: Users, panel: 'character-dna', label: 'Character DNA' },
   { icon: Info, panel: 'personality', label: 'Personality' },
-  { icon: FileText, panel: 'backstory', label: 'Backstory' },
   { icon: Sparkles, panel: 'expressions', label: 'Expressions' },
-  { icon: Music, panel: 'voice-profile', label: 'Voice Profile' },
   { icon: Palette, panel: 'outfits', label: 'Outfits' },
   { icon: Camera, panel: 'multi-angle', label: 'Multi-Angle' },
   { icon: ListChecks, panel: 'consistency', label: 'Consistency' },
@@ -179,13 +182,13 @@ export const RightPanels = ({ onLayerVisibilityToggle, currentPage = 'canvas' }:
     if (activePanel === 'production-notes') return <ProductionNotesPanel />;
     
     // Characters panels
+    if (activePanel === 'character-input') return <CharacterInputPanel onStartSculpt={(data) => console.log('Start sculpt:', data)} />;
+    if (activePanel === 'character-sculpt') return <CharacterSculptPanel onSave={(img) => console.log('Save:', img)} />;
     if (activePanel === 'character-gallery') return <CharacterGalleryPanel onSelectCharacter={(char) => console.log('Selected:', char)} />;
     if (activePanel === 'dna-library') return <DNAProfileLibraryPanel onLoadProfile={(dna) => console.log('Loaded DNA:', dna)} />;
     if (activePanel === 'character-dna') return <CharacterDNAPanel />;
     if (activePanel === 'personality') return <PersonalityEditorPanel />;
-    if (activePanel === 'backstory') return <BackstoryManagerPanel />;
     if (activePanel === 'expressions') return <ExpressionLibraryPanel />;
-    if (activePanel === 'voice-profile') return <VoiceProfilePanel />;
     if (activePanel === 'outfits') return <OutfitVariationsPanel />;
     if (activePanel === 'multi-angle') return <MultiAngleViewsPanel />;
     if (activePanel === 'consistency') return <ConsistencyValidatorPanel />;

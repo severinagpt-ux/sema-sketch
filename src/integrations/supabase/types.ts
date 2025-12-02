@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      character_batches: {
+        Row: {
+          character_id: string
+          completed_shots: number | null
+          created_at: string
+          error_message: string | null
+          id: string
+          status: string
+          total_shots: number | null
+          updated_at: string
+        }
+        Insert: {
+          character_id: string
+          completed_shots?: number | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          status?: string
+          total_shots?: number | null
+          updated_at?: string
+        }
+        Update: {
+          character_id?: string
+          completed_shots?: number | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          status?: string
+          total_shots?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_batches_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       character_dna_profiles: {
         Row: {
           created_at: string
@@ -90,7 +131,9 @@ export type Database = {
           id: string
           name: string
           personality_type: string | null
+          reference_url: string | null
           role: string | null
+          style_tags: string | null
           thumbnail_url: string | null
           total_generations: number | null
           updated_at: string
@@ -103,7 +146,9 @@ export type Database = {
           id?: string
           name: string
           personality_type?: string | null
+          reference_url?: string | null
           role?: string | null
+          style_tags?: string | null
           thumbnail_url?: string | null
           total_generations?: number | null
           updated_at?: string
@@ -116,7 +161,9 @@ export type Database = {
           id?: string
           name?: string
           personality_type?: string | null
+          reference_url?: string | null
           role?: string | null
+          style_tags?: string | null
           thumbnail_url?: string | null
           total_generations?: number | null
           updated_at?: string
@@ -128,6 +175,71 @@ export type Database = {
             columns: ["dna_profile_id"]
             isOneToOne: false
             referencedRelation: "character_dna_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shots: {
+        Row: {
+          angle_deg: number | null
+          aspect_ratio: string
+          background: string
+          batch_id: string
+          created_at: string
+          error_message: string | null
+          expression: string | null
+          framing: string
+          id: string
+          image_url: string | null
+          outfit_id: string | null
+          resolution: string
+          shot_key: string
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          angle_deg?: number | null
+          aspect_ratio?: string
+          background?: string
+          batch_id: string
+          created_at?: string
+          error_message?: string | null
+          expression?: string | null
+          framing: string
+          id?: string
+          image_url?: string | null
+          outfit_id?: string | null
+          resolution?: string
+          shot_key: string
+          status?: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          angle_deg?: number | null
+          aspect_ratio?: string
+          background?: string
+          batch_id?: string
+          created_at?: string
+          error_message?: string | null
+          expression?: string | null
+          framing?: string
+          id?: string
+          image_url?: string | null
+          outfit_id?: string | null
+          resolution?: string
+          shot_key?: string
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shots_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "character_batches"
             referencedColumns: ["id"]
           },
         ]

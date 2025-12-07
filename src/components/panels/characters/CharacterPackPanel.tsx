@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { useCharacterPack } from '@/hooks/useCharacterPack';
+import { useCharacterPackRealtime } from '@/hooks/useCharacterPackRealtime';
 import { 
   Sparkles, 
   RefreshCw, 
@@ -14,7 +15,8 @@ import {
   User,
   Smile,
   Shirt,
-  RotateCcw
+  RotateCcw,
+  ExternalLink
 } from 'lucide-react';
 
 interface CharacterPackPanelProps {
@@ -28,6 +30,7 @@ export function CharacterPackPanel({
   characterName = 'Character',
   referenceUrl 
 }: CharacterPackPanelProps) {
+  const navigate = useNavigate();
   const {
     isGenerating,
     currentBatch,
@@ -36,11 +39,10 @@ export function CharacterPackPanel({
     loadBatchStatus,
     loadCharacterBatches,
     loadBatchShots,
-  } = useCharacterPack();
+  } = useCharacterPackRealtime();
 
   const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
   const [batches, setBatches] = useState<any[]>([]);
-  const [pollInterval, setPollInterval] = useState<NodeJS.Timeout | null>(null);
 
   // Load existing batches
   useEffect(() => {
@@ -48,20 +50,6 @@ export function CharacterPackPanel({
       loadCharacterBatches(characterId).then(setBatches);
     }
   }, [characterId, loadCharacterBatches]);
-
-  // Poll for updates while generating
-  useEffect(() => {
-    if (currentBatch && (currentBatch.status === 'running' || currentBatch.status === 'pending')) {
-      const interval = setInterval(() => {
-        loadBatchStatus(currentBatch.id);
-      }, 3000);
-      setPollInterval(interval);
-      return () => clearInterval(interval);
-    } else if (pollInterval) {
-      clearInterval(pollInterval);
-      setPollInterval(null);
-    }
-  }, [currentBatch?.status, currentBatch?.id, loadBatchStatus]);
 
   const handleGenerate = async () => {
     if (!characterId) return;
@@ -164,6 +152,18 @@ export function CharacterPackPanel({
               <Sparkles className="h-4 w-4 mr-2" />
               {isGenerating ? 'Generating Pack...' : 'Generate Full Character Pack'}
             </Button>
+
+            {currentBatch && (
+              <Button 
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => navigate(`/characters/${characterId}/pack?batch=${currentBatch.id}`)}
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Open Full Viewer
+              </Button>
+            )}
 
             {!referenceUrl && (
               <p className="text-xs text-amber-500">

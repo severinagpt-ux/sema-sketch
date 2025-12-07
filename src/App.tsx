@@ -8,6 +8,7 @@ import VideoEditor from "./pages/VideoEditor";
 import AudioEditor from "./pages/AudioEditor";
 import Storyboard from "./pages/Storyboard";
 import Characters from "./pages/Characters";
+import CharacterPackViewer from "./pages/CharacterPackViewer";
 import Props from "./pages/Props";
 import NotFound from "./pages/NotFound";
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/audio-editor" element={<AudioEditor />} />
           <Route path="/storyboard" element={<Storyboard />} />
           <Route path="/characters" element={<Characters />} />
+          <Route path="/characters/:characterId/pack" element={<CharacterPackViewer />} />
           <Route path="/props" element={<Props />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

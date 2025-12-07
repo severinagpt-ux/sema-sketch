@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Layers, Info, Wand, Palette, ChevronLeft, Package, ZoomIn, Microscope, ImagePlus, MessageSquare, Settings as SettingsIcon, Film, Users, Box, Video, Music, FileText, Palette as PaletteIcon, Lightbulb, ListChecks, Ruler, Camera, Sparkles, Images, Library } from 'lucide-react';
+import { Layers, Info, Wand, Palette, ChevronLeft, Package, ZoomIn, Microscope, ImagePlus, MessageSquare, Settings as SettingsIcon, Film, Users, Box, Video, Music, FileText, Palette as PaletteIcon, Lightbulb, ListChecks, Ruler, Camera, Sparkles, Images, Library, Upload } from 'lucide-react';
 import { Button } from './ui/button';
 import { Panel, PageType, UniversalPanel, CanvasPanel, StoryboardPanel, CharactersPanel, PropsPanel, VideoPanel, AudioPanel } from '@/lib/types';
 import { LayersPanel } from './panels/LayersPanel';
@@ -36,6 +36,7 @@ import { CharacterInputPanel } from './panels/characters/CharacterInputPanel';
 import { CharacterSculptPanel } from './panels/characters/CharacterSculptPanel';
 import { ManualSculptToolsPanel } from './panels/characters/ManualSculptToolsPanel';
 import { CharacterPackPanel } from './panels/characters/CharacterPackPanel';
+import { CharacterUploadForm } from './panels/characters/CharacterUploadForm';
 import { PropsLibraryPanel } from './panels/props/PropsLibraryPanel';
 import { SceneLibraryPanel } from './panels/props/SceneLibraryPanel';
 import { StyleVariationsPanel } from './panels/props/StyleVariationsPanel';
@@ -52,6 +53,7 @@ import { AudioSyncPanel } from './panels/video/AudioSyncPanel';
 import { AudioForgePanel } from './panels/audio/AudioForgePanel';
 import { VoiceSynthesisPanel } from './panels/audio/VoiceSynthesisPanel';
 import { PanelSize } from '@/lib/types';
+import { ScrollArea } from './ui/scroll-area';
 
 interface RightPanelsProps {
   onLayerVisibilityToggle: (layerId: string) => void;
@@ -86,6 +88,7 @@ const storyboardPanels: { icon: any; panel: StoryboardPanel; label: string }[] =
 ];
 
 const charactersPanels: { icon: any; panel: CharactersPanel; label: string }[] = [
+  { icon: Upload, panel: 'character-upload', label: 'Upload Character' },
   { icon: ImagePlus, panel: 'character-input', label: 'Character Input' },
   { icon: Wand, panel: 'character-sculpt', label: 'AI Sculpt Tools' },
   { icon: Package, panel: 'character-pack', label: 'Character Pack' },
@@ -184,6 +187,18 @@ export const RightPanels = ({ onLayerVisibilityToggle, currentPage = 'canvas' }:
     if (activePanel === 'production-notes') return <ProductionNotesPanel />;
     
     // Characters panels
+    if (activePanel === 'character-upload') return (
+      <ScrollArea className="h-full">
+        <div className="p-4">
+          <CharacterUploadForm 
+            onCharacterCreated={(char) => {
+              console.log('Character created:', char);
+              setActivePanel('character-pack');
+            }}
+          />
+        </div>
+      </ScrollArea>
+    );
     if (activePanel === 'character-input') return <CharacterInputPanel onStartSculpt={(data) => console.log('Start sculpt:', data)} />;
     if (activePanel === 'character-sculpt') return <CharacterSculptPanel onSave={(img) => console.log('Save:', img)} />;
     if (activePanel === 'character-gallery') return <CharacterGalleryPanel onSelectCharacter={(char) => console.log('Selected:', char)} />;

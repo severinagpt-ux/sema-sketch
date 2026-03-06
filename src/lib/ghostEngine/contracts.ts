@@ -1,0 +1,155 @@
+// Canonical Ghost Contracts for flagship tools
+import type { GhostContract } from './types';
+
+export const SMART_HEAL_CONTRACT: GhostContract = {
+  id: 'smart-heal-v1',
+  tool: 'smart_heal',
+  editClass: 'HYBRID_RECONSTRUCTIVE',
+  requestedMaps: ['TARGET_MASK', 'PROTECT_MASK', 'CONFIDENCE'],
+  preferredModel: 'NANO_BANANA_2',
+  allowEscalation: true,
+  roiRequired: true,
+  spatialLock: true,
+  preserveSourcePixels: false,
+  confidenceRequired: true,
+  userReviewRequired: false,
+  validationProfile: {
+    requireEdgeAdherence: false,
+    requireTopologyCheck: false,
+    requireLeakCheck: true,
+    requireCompletenessCheck: false,
+    requirePatchSeamCheck: true,
+    requireIdentityDriftCheck: true,
+    minimumConfidence: 0.86,
+  },
+  routingHints: {
+    expectedRoiScale: 'MICRO',
+    complexity: 'LOW',
+    likelySubject: 'PORTRAIT',
+    likelyEdgeMode: 'MIXED',
+  },
+};
+
+export const SEGMENT_WAND_CONTRACT: GhostContract = {
+  id: 'segment-wand-v1',
+  tool: 'semantic_segment_wand',
+  editClass: 'DETERMINISTIC_PRESERVING',
+  requestedMaps: ['INSTANCE', 'TRIMAP', 'ALPHA', 'CONFIDENCE'],
+  preferredModel: 'NANO_BANANA_PRO',
+  allowEscalation: true,
+  roiRequired: false,
+  spatialLock: true,
+  preserveSourcePixels: true,
+  confidenceRequired: true,
+  userReviewRequired: false,
+  validationProfile: {
+    requireEdgeAdherence: true,
+    requireTopologyCheck: true,
+    requireLeakCheck: true,
+    requireCompletenessCheck: true,
+    requirePatchSeamCheck: false,
+    requireIdentityDriftCheck: false,
+    minimumConfidence: 0.82,
+  },
+  routingHints: {
+    expectedRoiScale: 'SMALL',
+    complexity: 'HIGH',
+    likelySubject: 'MIXED',
+    likelyEdgeMode: 'MIXED',
+  },
+};
+
+export const PHANTOM_RELIGHT_CONTRACT: GhostContract = {
+  id: 'phantom-relight-v1',
+  tool: 'phantom_relight',
+  editClass: 'DETERMINISTIC_PRESERVING',
+  requestedMaps: ['DEPTH', 'NORMAL', 'ALBEDO', 'SHADING'],
+  preferredModel: 'NANO_BANANA_PRO',
+  allowEscalation: false,
+  roiRequired: false,
+  spatialLock: true,
+  preserveSourcePixels: true,
+  confidenceRequired: true,
+  userReviewRequired: true,
+  validationProfile: {
+    requireEdgeAdherence: false,
+    requireTopologyCheck: false,
+    requireLeakCheck: false,
+    requireCompletenessCheck: false,
+    requirePatchSeamCheck: false,
+    requireIdentityDriftCheck: true,
+    minimumConfidence: 0.80,
+  },
+  routingHints: {
+    expectedRoiScale: 'LARGE',
+    complexity: 'HIGH',
+    likelySubject: 'MIXED',
+    likelyEdgeMode: 'MIXED',
+  },
+};
+
+export const MATERIAL_INJECTION_CONTRACT: GhostContract = {
+  id: 'material-inject-v1',
+  tool: 'material_injector',
+  editClass: 'HYBRID_RECONSTRUCTIVE',
+  requestedMaps: ['INSTANCE', 'ALBEDO', 'SPECULAR', 'ROUGHNESS', 'MATERIAL_CLASS'],
+  preferredModel: 'NANO_BANANA_PRO',
+  allowEscalation: false,
+  roiRequired: true,
+  spatialLock: true,
+  preserveSourcePixels: false,
+  confidenceRequired: true,
+  userReviewRequired: true,
+  validationProfile: {
+    requireEdgeAdherence: true,
+    requireTopologyCheck: false,
+    requireLeakCheck: true,
+    requireCompletenessCheck: true,
+    requirePatchSeamCheck: true,
+    requireIdentityDriftCheck: true,
+    minimumConfidence: 0.82,
+  },
+  routingHints: {
+    expectedRoiScale: 'MEDIUM',
+    complexity: 'HIGH',
+    likelySubject: 'MIXED',
+    likelyEdgeMode: 'HARD',
+  },
+};
+
+export const GLOBAL_FINISH_CONTRACT: GhostContract = {
+  id: 'global-finish-v1',
+  tool: 'global_finish',
+  editClass: 'FULLY_GENERATIVE',
+  requestedMaps: ['DEPTH', 'NORMAL', 'CONFIDENCE'],
+  preferredModel: 'NANO_BANANA_PRO',
+  allowEscalation: false,
+  roiRequired: false,
+  spatialLock: false,
+  preserveSourcePixels: false,
+  confidenceRequired: false,
+  userReviewRequired: true,
+  validationProfile: {
+    requireEdgeAdherence: false,
+    requireTopologyCheck: false,
+    requireLeakCheck: false,
+    requireCompletenessCheck: false,
+    requirePatchSeamCheck: false,
+    requireIdentityDriftCheck: true,
+    minimumConfidence: 0.75,
+  },
+  routingHints: {
+    expectedRoiScale: 'LARGE',
+    complexity: 'HIGH',
+    likelySubject: 'MIXED',
+    likelyEdgeMode: 'MIXED',
+  },
+};
+
+export const ALL_CONTRACTS: Record<string, GhostContract> = {
+  smart_heal: SMART_HEAL_CONTRACT,
+  semantic_segment_wand: SEGMENT_WAND_CONTRACT,
+  phantom_relight: PHANTOM_RELIGHT_CONTRACT,
+  material_injector: MATERIAL_INJECTION_CONTRACT,
+  global_finish: GLOBAL_FINISH_CONTRACT,
+};

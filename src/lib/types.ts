@@ -21,7 +21,8 @@ export type UniversalPanel = 'ai-assistant' | 'assets' | 'settings';
 
 // Canvas/Image Editor panels
 export type CanvasPanel = 'layers' | 'inspector' | 'color' | 'effects' 
-  | 'cursor-zoom' | 'microscope' | 'ai-image-gen';
+  | 'cursor-zoom' | 'microscope' | 'ai-image-gen'
+  | 'visual-inspector' | 'smart-heal' | 'global-finish' | 'god-mode';
 
 // Storyboard panels
 export type StoryboardPanel = 'shot-list' | 'script' | 'shot-details' 

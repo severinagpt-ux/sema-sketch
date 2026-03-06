@@ -11,3 +11,12 @@ verify_jwt = false
 
 [functions.generate-character-pack]
 verify_jwt = false
+
+[functions.ghost-visual-inspector]
+verify_jwt = false
+
+[functions.ghost-smart-heal]
+verify_jwt = false
+
+[functions.ghost-global-finish]
+verify_jwt = false

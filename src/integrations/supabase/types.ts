@@ -179,6 +179,60 @@ export type Database = {
           },
         ]
       }
+      project_assets: {
+        Row: {
+          category: string
+          created_at: string
+          file_size: number | null
+          file_type: string
+          file_url: string
+          height: number | null
+          id: string
+          is_favorite: boolean | null
+          metadata: Json | null
+          name: string
+          tags: string[] | null
+          thumbnail_url: string | null
+          updated_at: string
+          user_id: string
+          width: number | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          file_size?: number | null
+          file_type?: string
+          file_url: string
+          height?: number | null
+          id?: string
+          is_favorite?: boolean | null
+          metadata?: Json | null
+          name: string
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          updated_at?: string
+          user_id: string
+          width?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          file_size?: number | null
+          file_type?: string
+          file_url?: string
+          height?: number | null
+          id?: string
+          is_favorite?: boolean | null
+          metadata?: Json | null
+          name?: string
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          updated_at?: string
+          user_id?: string
+          width?: number | null
+        }
+        Relationships: []
+      }
       shots: {
         Row: {
           angle_deg: number | null

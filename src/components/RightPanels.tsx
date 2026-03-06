@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Layers, Info, Wand, Palette, ChevronLeft, Package, ZoomIn, Microscope, ImagePlus, MessageSquare, Settings as SettingsIcon, Film, Users, Box, Video, Music, FileText, Palette as PaletteIcon, Lightbulb, ListChecks, Ruler, Camera, Sparkles, Images, Library, Upload } from 'lucide-react';
+import { Layers, Info, Wand, Palette, ChevronLeft, Package, ZoomIn, Microscope, ImagePlus, MessageSquare, Settings as SettingsIcon, Film, Users, Box, Video, Music, FileText, Palette as PaletteIcon, Lightbulb, ListChecks, Ruler, Camera, Sparkles, Images, Library, Upload, Eye, Zap, Crown, Ghost } from 'lucide-react';
 import { Button } from './ui/button';
 import { Panel, PageType, UniversalPanel, CanvasPanel, StoryboardPanel, CharactersPanel, PropsPanel, VideoPanel, AudioPanel } from '@/lib/types';
 import { LayersPanel } from './panels/LayersPanel';
@@ -52,6 +52,10 @@ import { EffectsLibraryPanel } from './panels/video/EffectsLibraryPanel';
 import { AudioSyncPanel } from './panels/video/AudioSyncPanel';
 import { AudioForgePanel } from './panels/audio/AudioForgePanel';
 import { VoiceSynthesisPanel } from './panels/audio/VoiceSynthesisPanel';
+import { VisualInspectorPanel } from './panels/ghost/VisualInspectorPanel';
+import { SmartHealPanel } from './panels/ghost/SmartHealPanel';
+import { GlobalFinishPanel } from './panels/ghost/GlobalFinishPanel';
+import { GodModePanel } from './panels/ghost/GodModePanel';
 import { PanelSize } from '@/lib/types';
 import { ScrollArea } from './ui/scroll-area';
 
@@ -74,6 +78,10 @@ const canvasPanels: { icon: typeof Layers; panel: CanvasPanel; label: string }[]
   { icon: Palette, panel: 'color', label: 'Color Picker' },
   { icon: Wand, panel: 'effects', label: 'Effects' },
   { icon: ImagePlus, panel: 'ai-image-gen', label: 'AI Image Gen' },
+  { icon: Eye, panel: 'visual-inspector', label: 'Visual Inspector' },
+  { icon: Zap, panel: 'smart-heal', label: 'Smart Heal' },
+  { icon: Crown, panel: 'global-finish', label: 'Global Finish' },
+  { icon: Ghost, panel: 'god-mode', label: 'God Mode' },
   { icon: ZoomIn, panel: 'cursor-zoom', label: 'Cursor Zoom' },
   { icon: Microscope, panel: 'microscope', label: 'Microscope' },
 ];
@@ -177,6 +185,10 @@ export const RightPanels = ({ onLayerVisibilityToggle, currentPage = 'canvas' }:
     if (activePanel === 'ai-image-gen') return <AIImageGenPanel />;
     if (activePanel === 'cursor-zoom') return <CursorZoomPanel size={panelSize === 'full' ? 'full' : 'half'} />;
     if (activePanel === 'microscope') return <MicroscopePanel size={panelSize === 'full' ? 'full' : 'half'} />;
+    if (activePanel === 'visual-inspector') return <VisualInspectorPanel />;
+    if (activePanel === 'smart-heal') return <SmartHealPanel />;
+    if (activePanel === 'global-finish') return <GlobalFinishPanel />;
+    if (activePanel === 'god-mode') return <GodModePanel />;
     
     // Storyboard panels
     if (activePanel === 'shot-list') return <ShotListPanel />;
